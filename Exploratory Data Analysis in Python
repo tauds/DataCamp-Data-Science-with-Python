@@ -1,6 +1,264 @@
+1. Initial exploration
+00:00 - 00:14
+Welcome to this course on exploratory data analysis! I'm Izzy, and I'll be your coach for chapters one and three of this course. My friend and colleague George will guide you through chapters two and four.
+
+2. Exploratory Data Analysis
+00:14 - 00:57
+Let's say we've got a new dataset about books. Is this good data? What questions can it answer for us? It's only after we understand what our data contains that we can think about how the data might be useful to us. Exploratory Data Analysis, or EDA for short, is the process of cleaning and reviewing data to derive insights such as descriptive statistics and correlation and generate hypotheses for experiments. EDA results often inform the next steps for the dataset, whether that be generating hypotheses, preparing the data for use in a machine learning model, or even throwing the data out and gathering new data!
+
+3. A first look with .head()
+00:57 - 01:26
+Let's begin by importing a dataset and reviewing some useful pandas methods for initial exploration! We'll import the books data from a csv file using pd-dot-read_csv and save it as a DataFrame called "books". Taking a look at the top of the DataFrame using the head function, we can see that our data contains columns representing book names, authors, ratings, publishing years, and genres.
+
+4. Gathering more .info()
+01:26 - 01:44
+pandas also offers a quick way to summarize the number of missing values in each column, the data type of each column, and memory usage using the dot-info method. It looks like there are no missing values in our dataset, but it does have a variety of data types.
+
+5. A closer look at categorical columns
+01:44 - 02:06
+A common question about categorical columns in a dataset is how many data points we have in each category. For example, perhaps we're interested in the genres represented in our books data. We can select the genre column and use the pandas Series method dot-value_counts to find the number of books with each genre.
+
+6. .describe() numerical columns
+02:06 - 02:29
+Gaining a quick understanding of data included in numerical columns is done with the help of the DataFrame-dot-describe method. Calling dot-describe on books, we see that it returns the count, mean, and standard deviation of the values in each numerical column (in this case rating and year), along with the min, max, and quartile values.
+
+7. Visualizing numerical data
+02:29 - 03:36
+Histograms are a classic way to look at the distribution of numerical data by splitting numerical values into discrete bins and visualizing the count of values in each bin. Throughout this course, we'll use Seaborn to explore datasets visually. Seaborn is imported as s-n-s. We'll also import matplotlib-dot-pyplot aliased as plt. To create a histogram, we'll use sns-dot-histplot and pass the books DataFrame as the data argument. Next, we indicate which column we'd like to use as x by passing the column name rating to the x keyword argument. After running plt-dot-show to display the plot, we see that most books received ratings above 4-point-4, with very few getting ratings below 4-point-0. However, the bin size here is a little awkward. Ideally, we would have a bin for each tenth of a rating, such as a single bin for scores greater than 4-point-5 to 4-point-6 inclusive.
+
+8. Adjusting bin width
+03:36 - 03:44
+We can set a bin width of point-one using the binwidth keyword argument. That's better!
+
+9. Let's practice!
+03:44 - 03:49
+Let's explore a brand new dataset using these skills.
+
+Functions for initial exploration
+You are researching unemployment rates worldwide and have been given a new dataset to work with. The data has been saved and loaded for you as a pandas DataFrame called unemployment. You've never seen the data before, so your first task is to use a few pandas functions to learn about this new data.
+
+pandas has been imported for you as pd.
+
+Instructions 3/3
+30 XP
+Use a pandas function to print the first five rows of the unemployment DataFrame.
+Use a pandas function to print a summary of column non-missing values and data types from the unemployment DataFrame.
+Print the summary statistics (count, mean, standard deviation, min, max, and quartile values) of each numerical column in unemployment
+
+# Print summary statistics for numerical columns in unemployment
+print(unemployment.describe())
+
+Counting categorical values
+Recall from the previous exercise that the unemployment DataFrame contains 182 rows of country data including country_code, country_name, continent, and unemployment percentages from 2010 through 2021.
+
+You'd now like to explore the categorical data contained in unemployment to understand the data that it contains related to each continent.
+
+The unemployment DataFrame has been loaded for you along with pandas as pd.
+
+Instructions
+100 XP
+Use a pandas function to count the values associated with each continent in the unemployment DataFrame.
+
+# Count the values associated with each continent in unemployment
+print(unemployment['continent'].value_counts())
+
+Global unemployment in 2021
+It's time to explore some of the numerical data in unemployment! What was typical unemployment in a given year? What was the minimum and maximum unemployment rate, and what did the distribution of the unemployment rates look like across the world? A histogram is a great way to get a sense of the answers to these questions.
+
+Your task in this exercise is to create a histogram showing the distribution of global unemployment rates in 2021.
+
+The unemployment DataFrame has been loaded for you along with pandas as pd.
+
+Instructions
+100 XP
+Import the required visualization libraries.
+Create a histogram of the distribution of 2021 unemployment percentages across all countries in unemployment; show a full percentage point in each bin.
+
+# Import the required visualization libraries
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Create a histogram of 2021 unemployment; show a full percent in each bin
+sns.histplot(x='2021', data=unemployment, binwidth=1)
+plt.show()
+
+1. Data validation
+00:00 - 00:13
+Data validation is an important early step in EDA. We want to understand whether data types and ranges are as expected before we progress too far in our analysis! Let's dive in.
+
+2. Validating data types
+00:13 - 00:44
+We learned in the last lesson that dot-info gives a quick overview of data types included in a dataset along with other information such as the number of non-missing values. We can also use the DataFrame dot-dtypes attribute if we're only interested in data types. But what if we aren't happy with these data types? Here, the year column in the books DataFrame is stored as a float, which doesn't make sense for year data, which should always be a whole number.
+
+3. Updating data types
+00:44 - 01:09
+Luckily, the dot-astype function allows us to change data types without too much effort. Here, we redefine the year column by selecting the column and calling the dot-astype method, indicating we'd like to change the column to an integer. Then we use the dot-dtypes attribute to check that the year column data is now stored as integers - and it is!
+
+4. Updating data types
+01:09 - 01:22
+Common programming data types as well as their Python names are listed here. It's the Python name that we pass to the astype function, as we did with int on the previous slide.
+
+5. Validating categorical data
+01:22 - 02:04
+We can validate categorical data by comparing values in a column to a list of expected values using dot-isin, which can either be applied to a Series as we'll show here or to an entire DataFrame. Let's check whether the values in the genre column are limited to "Fiction" and "Non Fiction" by passing these genres as a list of strings to dot-isin. The function returns a Series of the same size and shape as the original but with True and False in place of all values, depending on whether the value from the original Series was included in the list passed to dot-isin. We can see that some values are False.
+
+6. Validating categorical data
+02:04 - 02:16
+We can also use the tilde operator at the beginning of the code block to invert the True/ False values so that the function returns True if the value is NOT in the list passed to dot-isin.
+
+7. Validating categorical data
+02:16 - 02:27
+And if we're interested in filtering the DataFrame for only values that are in our list, we can use the isin code we just wrote to filter using Boolean indexing!
+
+8. Validating numerical data
+02:27 - 02:40
+Let's now validate numerical data. We can select and view only the numerical columns in a DataFrame by calling the select_dtypes method and passing "number" as the argument.
+
+9. Validating numerical data
+02:40 - 03:21
+Perhaps we'd like to know the range of years in which the books in our dataset were published. We can check the lowest and highest years by using the dot-min and dot-max functions, respectively. And we can view a more detailed picture of the distribution of year data using Seaborn's boxplot function. The boxplot shows the boundaries of each quartile of year data: as we saw using min and max, the lowest year is 2009 and the highest year is 2019. The 25th and 75th percentiles are 2010 and 2016 and the median year is 2013.
+
+10. Validating numerical data
+03:21 - 03:39
+We can also view the year data grouped by a categorical variable such as genre by setting the y keyword argument. It looks like the children's books in our dataset have slightly later publishing years in general, but the range of years is the same for all genres.
+
+11. Let's practice!
+03:39 - 03:45
+Now it's your turn to validate the unemployment data!
+
+Detecting data types
+A column has been changed in the unemployment DataFrame and it now has the wrong data type! This data type will stop you from performing effective exploration and analysis, so your task is to identify which column has the wrong data type and then fix it.
+
+pandas has been imported as pd; unemployment is also available.
+
+Instructions 2/2
+50 XP
+Update the data type of the 2019 column of unemployment to float.
+Print the dtypes of the unemployment DataFrame again to check that the data type has been updated!
+
+# Update the data type of the 2019 column to a float
+unemployment["2019"] = unemployment["2019"].astype('float')
+# Print the dtypes to check your work
+print(unemployment.dtypes)
+
+Validating continents
+Your colleague has informed you that the data on unemployment from countries in Oceania is not reliable, and you'd like to identify and exclude these countries from your unemployment data. The .isin() function can help with that!
+
+Your task is to use .isin() to identify countries that are not in Oceania. These countries should return True while countries in Oceania should return False. This will set you up to use the results of .isin() to quickly filter out Oceania countries using Boolean indexing.
+
+The unemployment DataFrame is available, and pandas has been imported as pd.
+
+Instructions 2/2
+50 XP
+Use Boolean indexing to print the unemployment DataFrame without any of the data related to countries in Oceania.
 
 # Define a Series describing whether each continent is outside of Oceania
 not_oceania = ~unemployment["continent"].isin(["Oceania"])
 
 # Print unemployment without records related to countries in Oceania
 print(unemployment[not_oceania])
+
+Validating range
+Now it's time to validate our numerical data. We saw in the previous lesson using .describe() that the largest unemployment rate during 2021 was nearly 34 percent, while the lowest was just above zero.
+
+Your task in this exercise is to get much more detailed information about the range of unemployment data using Seaborn's boxplot, and you'll also visualize the range of unemployment rates in each continent to understand geographical range differences.
+
+unemployment is available, and the following have been imported for you: Seaborn as sns, matplotlib.pyplot as plt, and pandas as pd.
+
+Instructions
+100 XP
+Print the minimum and maximum unemployment rates, in that order, during 2021.
+Create a boxplot of 2021 unemployment rates, broken down by continent.
+
+# Print the minimum and maximum unemployment rates during 2021
+print(unemployment['2021'].min(), unemployment['2021'].max())
+
+# Create a boxplot of 2021 unemployment rates, broken down by continent
+sns.boxplot(x='2021',y='continent',data=unemployment)
+plt.show()
+
+1. Data summarization
+00:00 - 00:10
+We ended the last video by exploring data by genre, noticing that children's books in our dataset have slightly later publishing years in general.
+
+2. Exploring groups of data
+00:10 - 00:52
+We can explore the characteristics of subsets of data further with the help of the dot-groupby function, which groups data by a given category, allowing the user to chain an aggregating function like dot-mean or dot-count to describe the data within each group. For example, we can group the books data by genre by passing the genre column name to the groupby function. Then, we chain an aggregating function, in this case, dot-mean, to find the mean value of the numerical columns for each genre. The results show that children's books have a higher average rating than other genres.
+
+3. Aggregating functions
+00:52 - 01:07
+Other aggregating functions that are useful to chain with dot-groupby are dot-sum, dot-count, dot-min, dot-max, dot-var, which returns the variance, and dot-std, which returns the standard deviation.
+
+4. Aggregating ungrouped data
+01:07 - 01:45
+The dot-agg function, short for aggregate, allows us to apply aggregating functions. By default, it aggregates data across all rows in a given column and is typically used when we want to apply more than one function. Here, we apply dot-agg to the books DataFrame and pass a list of aggregating functions to apply: dot-mean and dot-std. Our code returns a DataFrame of aggregated results, and dot-agg applies these functions only to numeric columns; the rating and year columns in the books DataFrame.
+
+5. Specifying aggregations for columns
+01:45 - 02:01
+We can even use a dictionary to specify which aggregation functions to apply to which columns. The keys in the dictionary are the columns to apply the aggregation, and each value is a list of the specific aggregating functions to apply to that column.
+
+6. Named summary columns
+02:01 - 02:51
+By combining dot-agg and dot-groupby, we can apply these new exploration skills to grouped data. Maybe we'd like to show the mean and standard deviation of rating for each book genre along with the median year. We can create named columns with our desired aggregations by using the dot-agg function and creating named tuples inside it. Each named tuple should include a column name followed by the aggregating function to apply to that column. The name of the tuple becomes the name of the resulting column. Now, we can get two summary values of interest about ratings and our year data looks cleaner! We can see that the Fiction genre has the lowest average rating as well as the largest variation in ratings.
+
+7. Visualizing categorical summaries
+02:51 - 03:33
+We can display similar information visually using a barplot. In Seaborn, bar plots will automatically calculate the mean of a quantitative variable like rating across grouped categorical data, such as the genre category we've been looking at. In Seaborn, bar plots also show a 95% confidence interval for the mean as a vertical line on the top of each bar. Here, we pass the genre column as the x values and the rating column as the y values. The results reinforce what we saw in the last slide: while Fiction books have the lowest rating, their ratings also have a little more variation.
+
+8. Let's practice!
+03:33 - 03:40
+Alright, it's time to summarize the unemployment data in the exercises.
+
+Summaries with .groupby() and .agg()
+In this exercise, you'll explore the means and standard deviations of the yearly unemployment data. First, you'll find means and standard deviations regardless of the continent to observe worldwide unemployment trends. Then, you'll check unemployment trends broken down by continent.
+
+The unemployment DataFrame is available, and pandas has been imported as pd.
+
+Instructions 2/2
+50 XP
+Print the mean and standard deviation of the unemployment rates for each year.
+2
+Print the mean and standard deviation of the unemployment rates for each year, grouped by continent.
+
+# Print the mean and standard deviation of rates by year
+print(unemployment.agg(['mean', 'std']))
+
+# Print yearly mean and standard deviation grouped by continent
+print(unemployment.groupby('continent').agg(['mean','std']))
+
+Named aggregations
+You've seen how .groupby() and .agg() can be combined to show summaries across categories. Sometimes, it's helpful to name new columns when aggregating so that it's clear in the code output what aggregations are being applied and where.
+
+Your task is to create a DataFrame called continent_summary which shows a row for each continent. The DataFrame columns will contain the mean unemployment rate for each continent in 2021 as well as the standard deviation of the 2021 employment rate. And of course, you'll rename the columns so that their contents are clear!
+
+The unemployment DataFrame is available, and pandas has been imported as pd.
+
+Instructions
+100 XP
+Create a column called mean_rate_2021 which shows the mean 2021 unemployment rate for each continent.
+Create a column called std_rate_2021 which shows the standard deviation of the 2021 unemployment rate for each continent.
+
+continent_summary = unemployment.groupby("continent").agg(
+    # Create the mean_rate_2021 column
+    mean_rate_2021 = ('2021', 'mean'),
+    # Create the std_rate_2021 column
+    std_rate_2021 = ('2021', 'std'),
+)
+print(continent_summary)
+
+Visualizing categorical summaries
+As you've learned in this chapter, Seaborn has many great visualizations for exploration, including a bar plot for displaying an aggregated average value by category of data.
+
+In Seaborn, bar plots include a vertical bar indicating the 95% confidence interval for the categorical mean. Since confidence intervals are calculated using both the number of values and the variability of those values, they give a helpful indication of how much data can be relied upon.
+
+Your task is to create a bar plot to visualize the means and confidence intervals of unemployment rates across the different continents.
+
+unemployment is available, and the following have been imported for you: Seaborn as sns, matplotlib.pyplot as plt, and pandas as pd.
+
+Instructions
+100 XP
+Create a bar plot showing continents on the x-axis and their respective average 2021 unemployment rates on the y-axis.
+
+# Create a bar plot of continents and their average unemployment
+sns.barplot(x='continent',y='2021',data=unemployment)
+plt.show()
