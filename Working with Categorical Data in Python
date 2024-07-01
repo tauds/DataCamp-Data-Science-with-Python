@@ -1,0 +1,194 @@
+1. Course introduction
+00:00 - 00:16
+Hello and welcome to another course from DataCamp. Our primary objective for this course is to learn how to work with categorical data in Python. My name is Kasey Jones and I am thrilled that you have decided to join me. Let's jump right in.
+
+2. What does it mean to be "categorical"?
+00:16 - 00:53
+A variable is usually considered categorical if it contains a finite number of distinct groups - or categories. Generally, the number of categories and the corresponding names are already known. In research fields, this type of data is also known as qualitative data. On the other hand, numerical data, also know as quantitative data, is expressed using a value and is usually in the form of a measurement. This course is completely focused on working with categorical data.
+
+3. Ordinal vs. nominal variables
+00:53 - 01:34
+Categorical data can be further broken down into two different types, ordinal and nominal. You can think of ordinal variables as having an order. When categories within a variable have a natural rank order, the variable is considered ordinal. We have all filled out surveys that have ordinal options, such as choices ranging from strongly disagree up through strongly agree. On the flip side, nominal variables are those that cannot be placed into a natural order. A good example here is when a survey asks what your favorite color is from a list of options.
+
+4. Our first dataset
+01:34 - 02:21
+To begin working with categorical variables, let's take a look at our first dataset. The adult census income dataset contains information on US adults and whether or not an adult makes over $50,000 annually. We have used the pandas method info to take a look at the dataset's variables and their data types, or dtypes for short. We quickly see that there are over 32,000 entries and 15 total columns. Take a look at the marital status column, which has the dtype - object. A dtype of object is how pandas stores strings and is a good indicator that a variable might be categorical.
+
+1 https://www.kaggle.com/uciml/adult-census-income
+5. Using describe
+02:21 - 02:41
+We can explore the marital status column in more detail by using the describe method on the pandas Series Marital Status. We see that there are seven unique values, with the married-civ-spouse option being the most common entry with almost 15,000 occurrences.
+
+6. Using value counts
+02:41 - 03:03
+Another way to explore the marital status column is to use the value counts method. This method prints out a frequency table of the values found in a pandas Series. We still see the 15,000 entries for married-civ-spouse, but we also see the remaining counts for each unique value in the marital status column.
+
+7. Using value counts with normalize
+03:03 - 03:36
+Although the value counts method has a few parameters, the most commonly used parameter is definitely normalize. By setting normalize to equal True, the output will contain relative frequency values instead of the counts of the unique values. The values shown are the proportions of all responses in a pandas Series that equal to a specific value. In this example, married-civ-spouse makes up 46% of all responses.
+
+8. Knowledge check
+03:36 - 03:43
+Lets recap the different types of data we have discussed by working through a couple of exercises.
+
+Exploring a target variable
+You have been asked to build a machine learning model to predict whether or not a person makes over $50,000 in a year. To understand the target variable, Above/Below 50k, you decide to explore the variable in more detail.
+
+The Python package pandas will be used throughout this course and will be loaded as pd throughout. The adult census income dataset, adult, has also been preloaded for you.
+
+Instructions 1/4
+25 XP
+1
+2
+3
+4
+Explore the Above/Below 50k variable by printing out a description of the variable's contents.
+Explore the Above/Below 50k variable by printing out a frequency table of the values found in this column.
+Rerun .value_counts(), but this time print out the relative frequency values instead of the counts.
+# Explore the Above/Below 50k variable
+print(adult["Above/Below 50k"].describe())
+
+# Print a frequency table of "Above/Below 50k"
+print(adult["Above/Below 50k"].value_counts())
+
+# Print relative frequency values
+print(adult["Above/Below 50k"].value_counts(normalize=True))
+
+Well done! Above/Below 50k is a categorical variable with only two categories. Using both the .describe() and .value_counts() methods you can see that the dataset is a little imbalanced towards people making less than $50,000.
+
+Ordinal categorical variables
+Columns regarding a person's income do not have to be numerical. If the income amount is split into distinct categories, the new column will be categorical. Since these categories will have a natural order (smallest income to largest), the variable is considered ordinal.
+
+1. Categorical data in pandas
+00:00 - 00:10
+The most common way of working with categorical data in Python is through using pandas. Let's take a quick look at how pandas handles categorical data.
+
+2. dtypes: object
+00:10 - 00:43
+After reading in the adult census income dataset, we can print out the dtypes of each column by using the dtypes property. We see dtypes of primarily int64, which is one way to save values as integers, and dtypes of object. By default, pandas tries to infer the data type of each column. In this dataset, the numerical values have been assigned a dtype of int64, while the columns containing strings are stored with the object dtype.
+
+3. dtypes: categorical
+00:43 - 01:39
+By default, columns containing strings are not stored using pandas' category dtype, as not every column containing strings needs to be categorical. Let's look at the dtype for Marital Status. We use the dtype property, as opposed to the dtypes property, since we are working with a Series and not a DataFrame. Pandas uses a capital O to represent the object dtype. We can convert this to the categorical dtype using the astype method and specifying category. This time, the output is quite different. Pandas is telling us that the variable is now saved as categorical and is providing the list of the categories found in the Series. Finally, notice in the print out that ordered equals false - indicating there is currently no order for these categories.
+
+4. Creating a categorical Series
+01:39 - 02:03
+There are two ways to create a categorical pandas Series when your data is not already in a DataFrame format. First we can use pd-dot-series on a list or array of data and set the dtype argument to category. The print out shows we have created a categorical Series with categories of A, B, and C.
+
+5. Creating a categorical Series
+02:03 - 02:38
+The second way is to use pd-dot-categorical. We are showing this alternative way because it allows us to tell pandas that the categories have a logical order by setting the ordered argument equal to true. The order is set by using the categories parameter. Whichever order you list the categories in will be the order of the categories going forward. Notice that the print out states that the order is C, then B, then A, which matches the order we used when creating the categorical Series.
+
+6. Why do we use categorical: memory
+02:38 - 03:21
+There are a few reasons why storing pandas Series with a dtype of categorical is useful. Let's look at the easiest one to quantify: it is a huge memory saver. Take a look at the number of bytes python uses to store the Marital Status column when saved as an object compared to when it is saved as a categorical column. We can do this using the nbytes attribute. In this example, using a categorical dtype reduced the memory footprint by a factor of eight. Since pandas will by default load all the data into your computers memory, reducing your memory footprint can be helpful when dealing with large datasets.
+
+7. Specify dtypes when reading data
+03:21 - 03:52
+If you know the data types of columns before reading in a dataset, it is good practice to specify at least some of the column dtypes. This can be done by creating a dictionary with column names as keys and data types as values. By setting the dtype parameter equal to this dictionary, pandas will set the dtypes of any columns that match keys found in the dictionary. We can quickly check the Marital Status dtype using the dtype method
+
+8. pandas category practice
+03:52 - 03:56
+Let's practice using the category dtype.
+
+Setting dtypes and saving memory
+A colleague of yours is exploring a list of occupations and how they relate to salary. She has given you a list of these occupations, list_of_occupations, and has a few simple questions such as "How many different titles are there?" and "Which position is the most common?".
+Create a pandas Series, series1, using the list_of_occupations (do not set the dtype).
+Print both the data type and number of bytes used of this new Series.
+Create a second pandas Series, series2, using the list_of_occupations and set the dtype to "category".
+Print both the data type and number of bytes used of this new Series.
+
+# Create a Series, default dtype
+series1 = pd.Series(list_of_occupations)
+
+# Print out the data type and number of bytes for series1
+print("series1 data type:", series1.dtype)
+print("series1 number of bytes:", series1.nbytes)
+
+# Create a Series, "category" dtype
+series2 = pd.Series(list_of_occupations, dtype="category")
+
+# Print out the data type and number of bytes for series2
+print("series2 data type:", series2.dtype)
+print("series2 number of bytes:", series2.nbytes)
+
+Creating a categorical pandas Series
+Another colleague at work has collected information on the number of "Gold", "Silver", and "Bronze" medals won by the USA at the Summer & Winter Olympics since 1896. She has provided this as a list, medals_won. Before taking a look at the total number of each medal won, you want to create a categorical pandas Series. However, you know that these medals have a specific order to them and that Gold is better than Silver, but Silver is better than Bronze. Use the object, medals_won, to help.
+
+Instructions
+100 XP
+Create a categorical pandas Series without using pd.Series().
+Specify the three known medal categories such that "Bronze" < "Silver" < "Gold".
+Specify that the order of the categories is important when creating this Series.
+# Create a categorical Series and specify the categories (let pandas know the order matters!)
+medals = pd.Categorical(medals_won, categories=["Bronze", "Silver", "Gold"], ordered=True)
+print(medals)
+Great work. pd.Categorical() is a great way to create a Series and specify both the categories and whether or not the order of these categories is important.
+
+Setting dtype when reading data
+You are preparing to create a machine learning model to predict a person's income category using the adult census income dataset. You don't have access to any cloud resources and you want to make sure that your laptop will be able to load the full dataset and process its contents. You have read in the first five rows of the dataset adult to help you understand what kind of columns are available.
+
+Instructions 1/4
+Call the correct attribute on the adult DataFrame to review the data types.
+Create a dictionary with keys: "Workclass", "Education", "Relationship", and "Above/Below 50k".
+Set the value for each key to be "category".
+Use the newly created dictionary, adult_dtypes, when reading in adult.csv
+
+# Check the dtypes
+print(adult.dtypes)
+
+# Create a dictionary with column names as keys and "category" as values
+adult_dtypes = {
+   "Workclass": "category",
+   "Education": "category",
+   "Relationship": "category",
+   "Above/Below 50k": "category" 
+}
+
+# Read in the CSV using the dtypes parameter
+adult2 = pd.read_csv(
+  "adult.csv",
+  dtype=adult_dtypes
+)
+print(adult2.dtypes)
+
+1. Grouping data by category in pandas
+00:00 - 00:13
+When using categorical variables in pandas, there are a few essential methods used for exploring data that every pandas user must master. We will cover one of these methods now.
+
+2. The basics of .groupby(): splitting data
+00:13 - 01:09
+The groupby method splits data across the unique values of the column specified. One of the most common forms of data analysis is to split data across groups and to perform analysis on each group. The groupby process is essentially equal to creating multiple DataFrames, one for each value in the specified variable. In the adult income dataset, the Above/Below 50k variable has two categories. This data can be split into two DataFrames using two separate filters. However, this can be replaced by a one liner using groupby. The first parameter in the groupby method is by - which is used to specify the variable or variables to split the data by. This does not have to be a list, but we will use a list throughout for consistency.
+
+3. The basics of .groupby(): apply a function
+01:09 - 01:52
+After calling groupby, you can specify a function that should be applied to the split data. Common functions such as sum, count, and mean can be used, but custom functions can be applied as well. When using numerical functions, such as mean, the function will only be applied to the numerical columns. Notice that the mean of each numerical column in the adult dataset was calculated across the two groups of the Above/Below 50k column. Just as a quick note, you don't have to create a groupby object to run a function. You can chain the creation and the function call in a one liner.
+
+4. Specifying columns
+01:52 - 02:46
+When using large datasets, it is not always possible to apply a groupby call to all columns. It is important to specify the columns of interest before calling the function to apply. Consider this group by call. We group by the above-below 50k column, subset to just the age and education number columns, and then calculate the sum of these two columns. Alternatively, we get the same result if we group by above-below 50k, call the sum function, and then subset the results to just the age and education number values. Option 1 tends to be much faster, as it will not perform the sum calculation on the other numerical columns. As your datasets get larger, it is important to be careful with running the groupby method.
+
+5. Groupby multiple columns
+02:46 - 03:47
+The groupby method can be called on more than one variable. By specifying two columns with the by parameter, the groupby method will create subsets of the data for all combinations of the variables specified. Here we are using the size function to check how many rows of the data fall into each grouping. The variable Above/Below 50k has two categories, while Marital Status has seven. This creates 14 different groupings. When calling groupby on multiple variables, it is important to check the size of each combination to make sure there are enough rows per combination to do analysis. For example, the combination of more than 50k and Married-AF-spouse only has 10 rows of data, which is not very much. If no rows exist for a combination of the variables, it will not be added to the groupby object.
+
+6. Practice using .groupby()
+03:47 - 03:53
+Let's work through a few examples of using the pandas groupby method.
+
+Create lots of groups
+You want to find the mean Age of adults when grouping by the following categories:
+
+"Workclass" (which has 9 categories)
+"Above/Below 50k" (which has 2 categories)
+"Education" (which has 16 categories).
+You have developed the following bit of code:
+
+gb = adult.groupby(by=[ "Workclass",
+                        "Above/Below 50k", 
+                        "Education"])
+How many groups are in the gb object and what is the maximum possible number of groups that could have been created? The dataset adult, and the gb object have been preloaded for you.
+
+
+
+
