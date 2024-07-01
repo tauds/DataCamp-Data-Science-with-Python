@@ -262,3 +262,1184 @@ Create a bar plot showing continents on the x-axis and their respective average 
 # Create a bar plot of continents and their average unemployment
 sns.barplot(x='continent',y='2021',data=unemployment)
 plt.show()
+
+1. Addressing missing data
+00:00 - 00:07
+Hi, I'm George, and in this video we'll look at strategies for handling missing data.
+
+2. Why is missing data a problem?
+00:07 - 00:50
+So, why is it important to deal with missing data? Well, it can affect distributions. As an example, we collect the heights of students at a high school. If we fail to collect the heights of the oldest students, who were taller than most of our sample, then our sample mean will be lower than the population mean. Put another way, our data is less representative of the underlying population. In this case, parts of our population aren't proportionately represented. This misrepresentation can lead us to draw incorrect conclusions, like thinking that, on average, students are shorter than they really are.
+
+3. Data professionals' job data
+00:50 - 01:15
+Let's illustrate how missing data impacts exploratory analysis using a dataset about data professionals. This dataset includes the year the data was obtained, job title, experience level, type of employment, location, company size, time spent working remotely, and salary in US dollars.
+
+4. Salary by experience level
+01:15 - 01:36
+To highlight the impact of missing values, let's look at salaries by experience level using a full version of the dataset. Now, let's compare this to the same data with some missing values. The y-axis shows that the largest salary is around 150000 dollars less in the second plot!
+
+5. Checking for missing values
+01:36 - 02:01
+With our dataset stored as a pandas DataFrame called salaries, we can count the number of missing values per column by chaining the dot-isna and dot-sum methods. isna refers to the fact that missing values are represented as na in DataFrames. The output shows all columns contain missing values, with Salary_USD missing 60 values.
+
+6. Strategies for addressing missing data
+02:01 - 02:38
+There are various approaches to handle missing data. One rule of thumb is to remove observations if they amount to five percent or less of all values. If we have more missing values, instead of dropping them, we can replace them with a summary statistic like the mean, median, or mode, depending on the context. This is known as imputation. Alternatively, we can impute by sub-groups. We saw that median salary varies by experience, so we could impute different salaries depending on experience.
+
+7. Dropping missing values
+02:38 - 02:48
+To calculate our missing values threshold we multiply the length of our DataFrame by five percent, giving us an upper limit of 30.
+
+8. Dropping missing values
+02:48 - 03:14
+We can use Boolean indexing to filter for columns with missing values less than or equal to this threshold, storing them as a variable called cols_to_drop. Printing cols_to_drop shows four columns. We drop missing values by calling dot-dropna, passing cols_to_drop to the subset argument. We set inplace to True so the DataFrame is updated.
+
+9. Imputing a summary statistic
+03:14 - 03:33
+We then filter for the remaining columns with missing values, giving us four columns. To impute the mode for the first three columns, we loop through them and call the dot-fillna method, passing the respective column's mode and indexing the first item, which contains the mode, in square brackets.
+
+10. Checking the remaining missing values
+03:33 - 03:52
+Checking for missing values again, we see salary_USD is now the only column with missing values and the volume has changed from 60 missing values to 41. This is because some rows may have contained missing values for our subset columns as well as salary, so they were dropped.
+
+11. Imputing by sub-group
+03:52 - 04:14
+We'll impute median salary by experience level by grouping salaries by experience and calculating the median. We use the dot-to-dict method, storing the grouped data as a dictionary. Printing the dictionary returns the median salary for each experience level, with executives earning the big bucks!
+
+12. Imputing by sub-group
+04:14 - 04:25
+We then impute using the dot-fillna method, providing the Experience column and calling the dot-map method, inside which we pass the salaries dictionary.
+
+13. No more missing values!
+04:25 - 04:28
+Now we see there are no more missing values!
+
+14. Let's practice!
+04:28 - 04:32
+Let's practice working with missing data!
+
+Dealing with missing data
+It is important to deal with missing data before starting your analysis.
+
+One approach is to drop missing values if they account for a small proportion, typically five percent, of your data.
+
+Working with a dataset on plane ticket prices, stored as a pandas DataFrame called planes, you'll need to count the number of missing values across all columns, calculate five percent of all values, use this threshold to remove observations, and check how many missing values remain in the dataset.
+
+# Count the number of missing values in each column
+print(planes.isna().sum())
+
+# Find the five percent threshold
+threshold = len(planes) * 0.05
+
+# Create a filter
+cols_to_drop = planes.columns[planes.isna().sum() <= threshold]
+
+# Drop missing values for columns below the threshold
+planes.dropna(subset=cols_to_drop, inplace=True)
+
+print(planes.isna().sum())
+
+Strategies for remaining missing data
+The five percent rule has worked nicely for your planes dataset, eliminating missing values from nine out of 11 columns!
+
+Now, you need to decide what to do with the "Additional_Info" and "Price" columns, which are missing 300 and 368 values respectively.
+
+You'll first take a look at what "Additional_Info" contains, then visualize the price of plane tickets by different airlines.
+
+The following imports have been made for you:
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+Print the values and frequencies of "Additional_Info".
+
+Create a boxplot of "Price" by "Airline".
+
+# Check the values of the Additional_Info column
+print(planes["Additional_Info"].value_counts())
+
+# Create a box plot of Price by Airline
+sns.boxplot(data=planes, x='Airline', y='Price')
+
+plt.show()
+
+Imputing missing plane prices
+Now there's just one column with missing values left!
+
+You've removed the "Additional_Info" column from planes—the last step is to impute the missing data in the "Price" column of the dataset.
+
+As a reminder, you generated this boxplot, which suggested that imputing the median price based on the "Airline" is a solid approach!
+
+Group planes by airline and calculate the median price.
+
+Convert the grouped median prices to a dictionary.
+
+# Calculate median plane ticket prices by Airline
+airline_prices = planes.groupby("Airline")["Price"].median()
+
+print(airline_prices)
+
+# Convert to a dictionary
+prices_dict = airline_prices.to_dict()
+
+# Map the dictionary to missing values of Price by Airline
+planes["Price"] = planes["Price"].fillna(planes["Airline"].map(prices_dict))
+
+# Check for missing values
+print(planes.isna().sum())
+
+1. Converting and analyzing categorical data
+00:00 - 00:04
+Now let's explore how to create and analyze categorical data.
+
+2. Previewing the data
+00:04 - 00:22
+Recall that we can use the select_dtypes method to filter any non-numeric data. Chaining dot-head allows us to preview these columns in our salaries DataFrame, showing columns such as Designation, Experience, Employment_Status, and Company_Size.
+
+3. Job titles
+00:22 - 00:32
+Let's examine frequency of values in the Designation column. The output is truncated by pandas automatically since there are so many different job titles!
+
+4. Job titles
+00:32 - 00:40
+We can count how many unique job titles there are using pandas dot-nunique method. There are 50 in total!
+
+5. Job titles
+00:40 - 00:47
+However, the fifth most popular job title, Research Scientist, appears less than 20 times.
+
+6. Extracting value from categories
+00:47 - 01:18
+The current format of the data limits our ability to generate insights. We can use the pandas series-dot-string-dot-contains method, which allows us to search a column for a specific string or multiple strings. Say we want to know which job titles have Scientist in them. We use the string-dot-contains method on the Designation column, passing the word Scientist. This returns True or False values depending on whether the row contains this word.
+
+7. Finding multiple phrases in strings
+01:18 - 02:02
+What if we want to filter for rows containing one or more phrases? Say we want to find job titles containing either Machine Learning or AI. We use the string-dot-contains method again, but this time we include a pipe between our two phrases. This will return True if an observation in the Designation column contains Machine Learning or AI, or false if neither of these phrases are present! Notice that we avoid spaces before or after the pipe - if we included spaces then string-dot-contains will only capture values that have a space, which isn't necessary for us in this case. Again we are returned the Boolean results.
+
+8. Finding multiple phrases in strings
+02:02 - 02:24
+What if we wanted to filter for job titles that start with a specific phrase such as "Data"? We use the same string-dot-contains method and include the caret symbol to indicate we are looking for this match at the start of the line. This will match titles such as "Data Scientist" but not "Big Data Engineer".
+
+9. Finding multiple phrases in strings
+02:24 - 02:40
+Now we have a sense of how this method works, let's define a list of job titles we want to find. We start by creating a list with the different categories of data roles, which will become the values of a new column in our DataFrame.
+
+10. Finding multiple phrases in strings
+02:40 - 03:01
+We then need to create variables containing our filters. We will look for Data Scientist or NLP for data science roles. We'll use Analyst or Analytics for data analyst roles. We repeat this for data engineer, machine learning engineer, managerial, and consultant roles.
+
+11. Finding multiple phrases in strings
+03:01 - 03:16
+The next step is to create a list with our range of conditions for the string-dot-contains method. We add data science, data analyst, data engineer, and all remaining roles, remembering to close our list.
+
+12. Creating the categorical column
+03:16 - 03:24
+Finally, we can create our new Job_Category column by using NumPy's dot-select function.
+
+13. Creating the categorical column
+03:24 - 03:27
+It takes a list of conditions as the first argument,
+
+14. Creating the categorical column
+03:27 - 03:32
+followed by a list of arrays to search for the conditions in.
+
+15. Creating the categorical column
+03:32 - 03:40
+By using an argument called default, we tell NumPy to assign "Other" when a value in our conditions list is not found.
+
+16. Previewing job categories
+03:40 - 03:49
+Previewing the Designation and our new Job_Category columns, we can sense check the first five values. All looks good!
+
+17. Visualizing job category frequency
+03:49 - 04:21
+With our new column, we can visualize how many jobs fall under each category. For this, we use Seaborn's countplot, passing our DataFrame to the data keyword argument and the Job_Category column to x. We call p-l-t-dot-show to display the plot. We can see Data Science, Engineer, and Analyst roles are by far the most popular! There aren't many roles categorized as Other, suggesting we captured the majority of our data roles appropriately!
+
+18. Let's practice!
+04:21 - 04:26
+Now it's your turn to work with categorical data!
+
+Finding the number of unique values
+You would like to practice some of the categorical data manipulation and analysis skills that you've just seen. To help identify which data could be reformatted to extract value, you are going to find out which non-numeric columns in the planes dataset have a large number of unique values.
+
+pandas has been imported for you as pd, and the dataset has been stored as planes.
+
+Instructions
+100 XP
+Filter planes for columns that are of "object" data type.
+Loop through the columns in the dataset.
+Add the column iterator to the print statement, then call the function to return the number of unique values in the column.
+
+# Filter the DataFrame for object columns
+non_numeric = planes.select_dtypes("object")
+
+# Loop through columns
+for i in non_numeric.columns:
+  
+  # Print the number of unique values
+  print(f"Number of unique values in {i} column: ",  non_numeric[i].nunique())
+
+Great looping! Interestingly, "Duration" is currently an object column whereas it should be a numeric column, and has 362 unique values! Let's find out more about this column.
+
+Flight duration categories
+As you saw, there are 362 unique values in the "Duration" column of planes. Calling planes["Duration"].head(), we see the following values:
+
+0        19h
+1     5h 25m
+2     4h 45m
+3     2h 25m
+4    15h 30m
+Name: Duration, dtype: object
+Looks like this won't be simple to convert to numbers. However, you could categorize flights by duration and examine the frequency of different flight lengths!
+
+You'll create a "Duration_Category" column in the planes DataFrame. Before you can do this you'll need to create a list of the values you would like to insert into the DataFrame, followed by the existing values that these should be created from.
+
+Instructions 1/2
+Create a list of categories containing "Short-haul", "Medium", and "Long-haul".
+
+Create short_flights, a string to capture values of "0h", "1h", "2h", "3h", or "4h" taking care to avoid values such as "10h".
+Create medium_flights to capture any values between five and nine hours.
+Create long_flights to capture any values from 10 hours to 16 hours inclusive.
+
+# Create a list of categories
+flight_categories = ["Short-haul", "Medium", "Long-haul"]
+
+# Create short_flights
+short_flights = "^0h|^1h|^2h|^3h|^4h"
+
+# Create medium_flights
+medium_flights = "^5h|^6h|^7h|^8h|^9h"
+
+# Create long_flights
+long_flights = "10h|11h|12h|13h|14h|15h|16h"
+
+Adding duration categories
+Now that you've set up the categories and values you want to capture, it's time to build a new column to analyze the frequency of flights by duration!
+
+The variables flight_categories, short_flights, medium_flights, and long_flights that you previously created are available to you.
+
+Additionally, the following packages have been imported: pandas as pd, numpy as np, seaborn as sns, and matplotlib.pyplot as plt.
+
+Instructions
+100 XP
+Create conditions, a list containing subsets of planes["Duration"] based on short_flights, medium_flights, and long_flights.
+Create the "Duration_Category" column by calling a function that accepts your conditions list and flight_categories, setting values not found to "Extreme duration".
+Create a plot showing the count of each category.
+
+# Create conditions for values in flight_categories to be created
+conditions = [
+    (planes["Duration"].str.contains(short_flights)),
+    (planes["Duration"].str.contains(medium_flights)),
+    (planes["Duration"].str.contains(long_flights))
+]
+
+# Apply the conditions list to the flight_categories
+planes["Duration_Category"] = np.select(conditions, 
+                                        flight_categories,
+                                        default="Extreme duration")
+
+# Plot the counts of each category
+sns.countplot(data=planes, x="Duration_Category")
+plt.show()
+
+Creative categorical transformation work! It's clear that the majority of flights are short-haul, and virtually none are longer than 16 hours! Now let's take a deep dive into working with numerical data.
+
+1. Working with numeric data
+00:00 - 00:04
+Time to switch our focus on to working with numeric data.
+
+2. The original salaries dataset
+00:04 - 00:14
+So far, we've been looking at a modified version of the data professionals dataset. Let's print summary information about our original DataFrame.
+
+3. The original salaries dataset
+00:14 - 00:26
+The first thing that jumps out is that the Salary_USD column we've been working with is not present, but there's a column called Salary_In_Rupees, referring to India's currency.
+
+4. Salary in rupees
+00:26 - 00:33
+Previewing this column, we see that the values contain commas, and the data type is object.
+
+5. Converting strings to numbers
+00:33 - 00:53
+To obtain Salary in USD we'll need to perform a few tasks. First, we need to remove the commas from the values in the Salary_In_Rupees column. Next, we change the data type to float. Lastly, we'll make a new column by converting the currency.
+
+6. Converting strings to numbers
+00:53 - 01:24
+To remove commas, we can use the pandas Series-dot-string-dot-replace method. We first pass the characters we want to remove, followed by the characters to replace them with. As we don't want to add characters back in, when we update the column we provide an empty string in this part of the method. Printing the first five rows of this column, we see the commas have been removed. However, the column is still object data type.
+
+7. Converting strings to numbers
+01:24 - 01:44
+We update the data type to float. We've looked up the conversation rate from Indian rupees to US dollars, and currently one rupee is worth one-point-two cents. To create the Salary_USD column we multiply the values in the rupees column by zero-point-zero-one-two.
+
+8. Previewing the new column
+01:44 - 01:54
+Printing the first five rows of the original and new column, we can see that values in Salary_USD are equal to one-point-two percent of the Salary_In_Rupees column.
+
+9. Adding summary statistics into a DataFrame
+01:54 - 02:16
+Recall that we've previously used pandas' groupby function to calculate summary statistics. Here, we find the mean salary in US dollars by company size. While this is useful, sometimes we might prefer to add summary statistics directly into our DataFrame, rather than creating a summary table.
+
+10. Adding summary statistics into a DataFrame
+02:16 - 02:33
+Let's say we would like to create a new column containing the standard deviation of Salary_USD, where values are conditional based on the Experience column. The first step still involves a groupby, done here with the Experience column.
+
+11. Adding summary statistics into a DataFrame
+02:33 - 02:35
+We then select the Salary_USD column,
+
+12. Adding summary statistics into a DataFrame
+02:35 - 02:39
+and call pandas dot-transform.
+
+13. Adding summary statistics into a DataFrame
+02:39 - 02:56
+Inside the transform call, we apply a lambda function using the syntax lambda x semi-colon, followed by a call of x-dot-std. This calculates the standard deviation of salaries based on experience.
+
+14. Adding summary statistics into a DataFrame
+02:56 - 03:32
+We can select more than one column and use the value_counts method. This prints the combinations of values for the columns we have chosen, in this case Experience and newly created std_dev columns. For example, there are 257 rows with SE, or Senior-level, experience, and the standard deviation in salary for this group is nearly 53000 dollars. Unsurprisingly, there appears to be a larger variation in salary associated with the most senior role, Executive.
+
+15. Adding summary statistics into a DataFrame
+03:32 - 03:59
+We can repeat this process for other summary statistics! Here, we add a column for the median salary based on company size. We use a backslash to split our code over two lines, otherwise it is quite long and difficult to read. Previewing the two columns of interest we see the values have been mapped correctly and that medium-sized companies have the largest median salary!
+
+16. Let's practice!
+03:59 - 04:04
+Now it's your turn to explore some numeric data!
+
+Flight duration
+You would like to analyze the duration of flights, but unfortunately, the "Duration" column in the planes DataFrame currently contains string values.
+
+You'll need to clean the column and convert it to the correct data type for analysis.
+
+# Preview the column
+print(planes["Duration"].head())
+
+# Remove the string character
+planes["Duration"] = planes["Duration"].str.replace("h", "")
+
+# Convert to float data type
+planes["Duration"] = planes["Duration"].astype(float)
+
+# Plot a histogram
+sns.histplot(x='Duration',data=planes)
+plt.show()
+
+Adding descriptive statistics
+Now "Duration" and "Price" both contain numeric values in the planes DataFrame, you would like to calculate summary statistics for them that are conditional on values in other columns.
+
+Instructions 1/3
+35 XP
+Add a column to planes containing the standard deviation of "Price" based on "Airline".
+2
+Calculate the median for "Duration" by "Airline", storing it as a column called "airline_median_duration".
+3
+Find the mean "Price" by "Destination", saving it as a column called "price_destination_mean".
+
+# Price standard deviation by Airline
+planes["airline_price_st_dev"] = planes.groupby("Airline")["Price"].transform(lambda x: x.std())
+
+print(planes[["Airline", "airline_price_st_dev"]].value_counts())
+
+# Median Duration by Airline
+planes["airline_median_duration"] = planes.groupby("Airline")["Duration"].transform(lambda x: x.median())
+
+print(planes[["Airline","airline_median_duration"]].value_counts())
+
+# Mean Price by Destination
+planes["price_destination_mean"] = planes.groupby("Destination")["Price"].transform(lambda x: x.mean())
+
+print(planes[["Destination","price_destination_mean"]].value_counts())
+
+Terrific transforming! Looks like Jet Airways has the largest standard deviation in price, Air India has the largest median duration, and New Delhi, on average, is the most expensive destination. Now let's look at how to handle outliers.
+
+1. Handling outliers
+00:00 - 00:03
+Let's look at how to handle outliers.
+
+2. What is an outlier?
+00:03 - 00:27
+To recap, an outlier is an observation that is far away from other data points. If a house prices dataset has a median of 400,000 dollars, a house that costs five million dollars would likely be considered an outlier. However, we should consider factors that affect price such as location, number of bedrooms, and overall size.
+
+1 Image credit: https://unsplash.com/@ralphkayden
+3. Using descriptive statistics
+00:27 - 00:40
+A starting place for identifying outliers is with the pandas dot-describe method. We can see that the maximum salary is more than four times the mean and median. Seems extreme right?
+
+4. Using the interquartile range
+00:40 - 00:52
+We can define an outlier mathematically. First, we need to know the interquartile range, or IQR, which is the difference between the 75th and 25th percentiles.
+
+5. IQR in box plots
+00:52 - 01:08
+Recall that these percentiles are included in box plots, like this one showing salaries of data professionals. The box contains percentiles, and observations considered to be outliers are represented as diamonds outside of the box.
+
+6. Using the interquartile range
+01:08 - 01:29
+Once we have the IQR, we can find an upper outlier by looking for values above the sum of the 75th percentile plus one-point-five times the IQR. Lower outliers have values below the sum of the 25th percentile minus one-point-five times the IQR.
+
+7. Identifying thresholds
+01:29 - 01:53
+We can calculate percentiles using the Series-dot-quantile method. We pass zero-point-seven-five to find the 75th percentile for salary, then pass zero-point-two-five to get the 25th percentile. We calculate the IQR by subtracting one from the other. Printing the result shows an IQR of around 76000 dollars.
+
+8. Identifying outliers
+01:53 - 02:10
+We can plug these variables into our formulae to find the value thresholds, first for the upper limit and then for the lower limit. Printing the results, we can see that the lower limit is actually below zero, which isn't possible given we are working with salaries!
+
+9. Subsetting our data
+02:10 - 02:41
+We can find values outside of these limits by subsetting our data. It will only return upper outliers, but for the purpose of demonstrating the syntax, we've also filtered for values below the lower threshold. We also subset to just show Experience, Employee_Location, and Salary_USD. There are nine individuals with a salary above the upper threshold. Notice how none of them are entry level and they are all based in the US?
+
+10. Why look for outliers?
+02:41 - 03:07
+So why is the detection of outliers an important part of exploratory data analysis? These are extreme values and may not accurately represent the data. Additionally, they can skew the mean and standard deviation. If we plan to perform statistical tests or build machine learning models, these will often require data that is normally distributed and not skewed!
+
+11. What to do about outliers?
+03:07 - 03:41
+Once we know we have outliers, we need to decide what to do. It's helpful to ask ourselves why these outliers exist. For example, salaries can be very high depending on level of experience and the country of employment, so could be representative of a subset of our data. If this is the case, we could just leave them alone. Alternatively, do we know the values are accurate? Could there have been an error in data collection? If there's an error, we could remove the values.
+
+12. Dropping outliers
+03:41 - 04:02
+We can remove outliers by modifying the syntax we used to subset our data, filtering for values more than the lower limit and less than the upper limit. Reprinting our descriptive statistics shows nine fewer values, a mean that is 5000 dollars less than before, and a much lower maximum salary!
+
+13. Distribution of salaries
+04:02 - 04:22
+To highlight the impact of removing outliers, let's plot a histogram of the original dataset containing the outliers. We see the distribution is right-skewed by the upper outliers. Plotting with the no_outliers dataset, salaries is now less skewed and looks more like a normal distribution!
+
+14. Let's practice!
+04:22 - 04:26
+Time for you to practice working with outliers!
+
+What to do with outliers
+Identifying and dealing with outliers is an integral step in performing exploratory data analysis.
+
+In this exercise, you'll be presented with scenarios where outliers are present, and you need to decide what action you should take.
+
+Instructions
+100XP
+Place each scenario into the appropriate bucket depending on what approach should be taken to deal with the outlier(s).
+
+Identifying outliers
+You've proven that you recognize what to do when presented with outliers, but can you identify them using visualizations?
+
+Try to figure out if there are outliers in the "Price" or "Duration" columns of the planes DataFrame.
+
+matplotlib.pyplot and seaborn have been imported for you as plt and sns respectively.
+
+Instructions 1/3
+Plot the distribution of "Price" column from planes.
+# Plot a histogram of flight prices
+sns.histplot(data=planes, x='Price')
+plt.show()
+
+# Display descriptive statistics for flight duration
+print(planes['Duration'].describe())
+
+Impressive outlier detecting! Histograms, boxplots, and descriptive statistics are also useful methods for identifying extreme values. Now let's deal with them!
+
+Removing outliers
+While removing outliers isn't always the way to go, for your analysis, you've decided that you will only include flights where the "Price" is not an outlier.
+
+Therefore, you need to find the upper threshold and then use it to remove values above this from the planes DataFrame.
+
+pandas has been imported for you as pd, along with seaborn as sns.
+
+Instructions 4/4
+25 XP
+Find the 75th and 25th percentiles, saving as price_seventy_fifth and price_twenty_fifth respectively.
+Calculate the IQR, storing it as prices_iqr.
+Calculate the upper and lower outlier thresholds.
+
+# Find the 75th and 25th percentiles
+price_seventy_fifth = planes["Price"].quantile(0.75)
+price_twenty_fifth = planes["Price"].quantile(0.25)
+
+# Calculate iqr
+prices_iqr = price_seventy_fifth - price_twenty_fifth
+
+# Calculate the thresholds
+upper = price_seventy_fifth + (1.5 * prices_iqr)
+lower = price_twenty_fifth - (1.5 * prices_iqr)
+
+# Subset the data
+planes = planes[(planes["Price"] > lower) & (planes["Price"] < upper)]
+
+Ridiculous outlier removal skills! You managed to create thresholds based on the IQR and used them to filter the planes dataset to eliminate extreme prices. Originally the dataset had a maximum price of almost 55000, but the output of planes.describe() shows the maximum has been reduced to around 23000, reflecting a less skewed distribution for analysis!
+
+1. Patterns over time
+00:00 - 00:07
+When data includes dates or time values, we'll want to examine whether there might be patterns over time.
+
+2. Patterns over time
+00:07 - 00:23
+To illustrate, we'll be working with a subset of a dataset about divorce filings taking place in Mexico from 2000 until 2015. This data contains columns for marriage date and marriage duration in years.
+
+3. Importing DateTime data
+00:23 - 00:42
+Before we can begin to look at potential patterns over time, we need to help pandas understand that data in a given column is in fact date or time data. When a CSV file is imported into pandas, date and time data are typically interpreted as strings, as we see here.
+
+4. Importing DateTime data
+00:42 - 01:10
+We can fix that by adding the parse_dates keyword argument to the CSV import and setting it equal to a list of column names that should be interpreted as DateTime data. Now, when we check the data types of the imported CSV, the indicated column is a DateTime object. This data type opens up many possibilities for analysis, such as looking at patterns over years, months, or even days of the week.
+
+5. Converting to DateTime data
+01:10 - 01:37
+Of course, we may wish to update data types to DateTime data after we import the data. This is possible with pd-dot-to_datetime, which converts the argument passed to it to DateTime data. Here, we pass the marriage_date column with values stored as strings to pd-dot-to_datetime. This returns DateTime data which we save as the new marriage_date column.
+
+6. Creating DateTime data
+01:37 - 02:06
+pd-dot-to_datetime has lots of other useful functionality. For example, if a DataFrame has month, day, and year data stored in three different columns, as this one does, we can combine these columns into a single DateTime value by passing them to pd-dot-to_datetime. Note that for this trick to work, columns must be named "month", "day", and "year", but can appear in any order in the DataFrame.
+
+7. Creating DateTime data
+02:06 - 02:30
+Conversely, we might want to extract just the month, day, or year from a column containing a full date. If data is already stored in DateTime format, as marriage_date is, we can append dot-dt-dot-month to extract the month attribute, for example. We'll save the month data as a new column in the DataFrame so that we can use it in our analysis.
+
+8. Visualizing patterns over time
+02:30 - 03:23
+Line plots are a great way to examine relationships between variables. In Seaborn, line plots aggregate y values at each value of x and show the estimated mean and a confidence interval for that estimate. Perhaps we'd like to check whether there is any relationship between the month that a now-divorced couple got married and the length of their marriage. We can set x equal to the marriage_month column and y equal to marriage_duration. The results show some variation in mean marriage duration between months. The blue line represents the mean marriage duration for our dataset, while the confidence intervals in the lighter blue shading indicate the area that, with 95% probability, the population mean duration could fall between. The wide confidence intervals suggest that further analysis is needed!
+
+9. Let's practice!
+03:23 - 03:30
+It's your turn to practice working with DateTime data with a larger divorce dataset!
+
+Importing DateTime data
+You'll now work with the entire divorce dataset! The data describes Mexican marriages dissolved between 2000 and 2015. It contains marriage and divorce dates, education level, birthday, income for each partner, and marriage duration, as well as the number of children the couple had at the time of divorce.
+
+The column names and data types are as follows:
+
+divorce_date          object
+dob_man               object
+education_man         object
+income_man           float64
+dob_woman             object
+education_woman       object
+income_woman         float64
+marriage_date         object
+marriage_duration    float64
+num_kids             float64
+It looks like there is a lot of date information in this data that is not yet a DateTime data type! Your task is to fix that so that you can explore patterns over time.
+
+pandas has been imported as pd.
+
+Instructions
+100 XP
+Import divorce.csv, saving as a DataFrame, divorce; indicate in the import function that the divorce_date, dob_man, dob_woman, and marriage_date columns should be imported as DateTime values.
+
+# Import divorce.csv, parsing the appropriate columns as dates in the import
+divorce = pd.read_csv('divorce.csv',parse_dates=['divorce_date', 'dob_man', 'dob_woman', 'marriage_date'])
+print(divorce.dtypes)
+
+Updating data type to DateTime
+Now, the divorce DataFrame has been loaded for you, but one column is stored as a string that should be DateTime data. Which one is it? Once you've identified the column, you'll update it so that you can explore it more closely in the next exercise.
+
+pandas has been imported as pd.
+
+Instructions 2/2
+50 XP
+2
+Convert the marriage_date column of the divorce DataFrame to DateTime values.
+# Convert the marriage_date column to DateTime values
+divorce["marriage_date"] = pd.to_datetime(divorce["marriage_date"])
+
+Visualizing relationships over time
+Now that your date data is saved as DateTime data, you can explore patterns over time! Does the year that a couple got married have a relationship with the number of children that the couple has at the time of divorce? Your task is to find out!
+
+The divorce DataFrame (with all dates formatted as DateTime data types) has been loaded for you. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns.
+
+Instructions 1/2
+50 XP
+1
+2
+Define a column called marriage_year, which contains just the year portion of the marriage_date column.
+
+# Define the marriage_year column
+divorce["marriage_year"] = divorce["marriage_date"].dt.year
+
+# Create a line plot showing the average number of kids by year
+sns.lineplot(data=divorce, x="marriage_year", y="num_kids")
+plt.show()
+
+Nice! You've discovered a pattern here: it looks like couples who had later marriage years also had fewer children during their marriage. We'll explore this relationship and others further in the next video.
+
+1. Correlation
+00:00 - 00:09
+Getting a sense of relationships between variables is important for evaluating how data should be used. That's where correlation comes in!
+
+2. Correlation
+00:09 - 00:55
+Correlation describes the direction of the relationship between two variables as well as its strength. Understanding this relationship can help us use variables to predict future outcomes. A quick way to see the pairwise correlation of numeric columns in a DataFrame is to use pandas' dot-corr method. A negative correlation coefficient indicates that as one variable increases, the other decreases. A value closer to zero is indicative of a weak relationship, while values closer to one or negative one indicate stronger relationships. Note that dot-corr calculates the Pearson correlation coefficient, measuring the linear relationship between two variables.
+
+3. Correlation heatmaps
+00:55 - 01:31
+Let's wrap our divorce-dot-corr results in a Seaborn heatmap for quick visual interpretation. A heatmap has the benefit of color coding so that strong positive and negative correlations, represented in deep purple and beige respectively, are easier to spot. Setting the annot argument to True labels the correlation coefficient inside each cell. Here, we can see that marriage year and marriage duration are strongly negatively correlated; in our dataset, marriages in later years are typically shorter.
+
+4. Correlation in context
+01:31 - 01:52
+However, this highlights an important point about correlations: we must always interpret them within the context of our data! Since our dataset is about marriages that ended between 2000 to 2015, marriages that started in earlier years will by definition have a longer duration than those that started in later ones.
+
+5. Visualizing relationships
+01:52 - 02:26
+We also need to be careful to remember that the Pearson coefficient we've been looking at only describes the linear correlation between variables. Variables can have a strong non-linear relationship and a Pearson correlation coefficient of close to zero. Alternatively, data might have a correlation coefficient indicating a strong linear relationship when another relationship, such as quadratic, is actually a better fit for the data. This is why it's important to complement our correlation calculations with scatter plots!
+
+6. Scatter plots
+02:26 - 02:56
+For example, the monthly income of the female partner and the male partner at the time of divorce showed a correlation coefficient of zero-point-three-two in our heatmap. Let's check that this correctly indicates a small positive relationship between the two variables by passing them as x and y arguments to Seaborn's scatterplot function. It looks like the relationship exists but is not particularly strong, just as our heatmap suggested.
+
+7. Pairplots
+02:56 - 03:32
+We can take our scatterplots to the next level with Seaborn's pairplot. When passed a DataFrame, pairplot plots all pairwise relationships between numerical variables in one visualization. On the diagonal from upper left to lower right, we see the distribution of each variable's observations. This is useful for a quick overview of relationships within the dataset. However, having this much information in one visual can be difficult to interpret, especially with big datasets which lead to very small plot labels like the ones we see here.
+
+8. Pairplots
+03:32 - 04:04
+We can limit the number of plotted relationships by setting the vars argument equal to the variables of interest. This visual reassures us that what our correlation coefficients told us was true: variables representing the income of each partner as well as the marriage duration variable all have fairly weak relationships with each other. We also notice in the lower right plot that the distribution of marriage durations includes many shorter marriages and fewer longer marriages.
+
+9. Let's practice!
+04:04 - 04:10
+Now it's your turn to search for relationships in the divorce dataset!
+
+Interpreting a heatmap
+Which of the below statements is correct regarding the relationships between variables in the divorce DataFrame?
+
+The divorce DataFrame has been loaded for you so that you can explore it in the shell. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns.
+
+Visualizing variable relationships
+In the last exercise, you may have noticed that a longer marriage_duration is correlated with having more children, represented by the num_kids column. The correlation coefficient between the marriage_duration and num_kids variables is 0.45.
+
+In this exercise, you'll create a scatter plot to visualize the relationship between these variables. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns.
+
+Instructions
+100 XP
+Create a scatterplot showing marriage_duration on the x-axis and num_kids on the y-axis.
+# Create the scatterplot
+sns.scatterplot(data=divorce, x='marriage_duration', y='num_kids')
+plt.show()
+Bingo! There is a slight positive relationship in your scatterplot. In the dataset, couples with no children have no value in the num_kids column. If you are confident that all or most of the missing values in num_kids are related to couples without children, you could consider updating these values to 0, which might increase the correlation.
+
+Visualizing multiple variable relationships
+Seaborn's .pairplot() is excellent for understanding the relationships between several or all variables in a dataset by aggregating pairwise scatter plots in one visual.
+
+Your task is to use a pairplot to compare the relationship between marriage_duration and income_woman. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns.
+
+# Create a pairplot for income_woman and marriage_duration
+sns.pairplot(data=divorce, vars=['income_woman', 'marriage_duration'])
+plt.show()
+Well done! Just as in the correlation matrix, you can see that the relationship between income_woman and marriage_duration is not a strong one. You can also get a sense of the distributions of both variables in the upper left and lower right plots.
+
+1. Factor relationships and distributions
+00:00 - 00:10
+We previously looked at relationships between numerical variables. Of course, categorical variables, or factors, also have relationships.
+
+2. Level of education: male partner
+00:10 - 00:28
+We haven't explored the categorical variables related to education level yet. Let's fix that! Checking the value_counts for education_man, we see that most men have an education level between primary and professional, with a few men in the "None" or "Other" categories.
+
+3. Exploring categorical relationships
+00:28 - 00:50
+Categorical variables are harder to summarize numerically, so we often rely on visualizations to explore their relationships. Perhaps we are interested in the relationship between marriage duration and the education level of the man in the dissolved marriage. We could begin by making a histogram of the distribution of marriage duration
+
+4. Exploring categorical relationships
+00:50 - 01:18
+and then layer in the information we have on male education level by setting education_man as the hue argument. The resulting histogram reinforces what we saw in value_counts: we have a lot of information on males with professional-level education. However, because the education levels are stacked on top of each other, the relationship between marriage duration and male education level isn't super clear.
+
+5. Kernel Density Estimate (KDE) plots
+01:18 - 01:57
+Seaborn's Kernel Density Estimate or KDE plots address this issue. Similar to histograms, KDEs allow us to visualize distributions. KDEs are considered more interpretable, though, especially when multiple distributions are shown as they are here. Notice that the location of the peak marriage duration for each level of the male partner's education is more identifiable in this KDE plot than it was in the histogram. However, due to the smoothing algorithm used in KDE plots, the curve can include values that don't make sense, so it's important to set good smoothing parameters.
+
+6. Kernel Density Estimate (KDE) plots
+01:57 - 02:13
+Here's an example: zooming in on the KDE plot showing the distribution of male education levels, we can see that the distribution seems to suggest that some couples had marriage durations of less than zero. That's impossible!
+
+7. Kernel Density Estimate (KDE) plots
+02:13 - 02:44
+To fix this, we can use the cut keyword argument. cut tells Seaborn how far past the minimum and maximum data values the curve should go when smoothing is applied. When we set cut equal to zero, the curve will be limited to values between the minimum and maximum x values, here, the minimum and maximum values for marriage duration. The plot now shows only marriage durations greater than or equal to one year, the shortest marriage duration in the dataset.
+
+8. Cumulative KDE plots
+02:44 - 03:03
+If we're interested in the cumulative distribution function, we can set the cumulative keyword argument to True. This graph describes the probability that marriage duration is less than or equal to the value on the x-axis for each level of male partner education.
+
+9. Relationship between marriage age and education
+03:03 - 03:21
+Perhaps we are interested in whether divorced couples who got married when they were older typically have higher levels of education. We can create columns representing the approximate age at marriage for men and women by subtracting each partner's birth year from the marriage year.
+
+10. Scatter plot with categorical variables
+03:21 - 03:42
+Then, we create a scatterplot using these variables on the x and y-axis. It looks like there is a positive correlation between them! Indeed, the Pearson correlation coefficient is point-69. But the x and y values in scatter plots must be numerical. How do we introduce education level into our visual?
+
+11. Scatter plot with categorical variables
+03:42 - 04:01
+One way to do this is to set the hue argument, which assigns a color to each data point based on values in a given column. Here, we set hue equal to education_man. The results suggest that men with a professional education level, represented with orange dots, may tend to get married later.
+
+12. Let's practice!
+04:01 - 04:05
+Now it's your turn!
+
+Categorial data in scatter plots
+In the video, we explored how men's education and age at marriage related to other variables in our dataset, the divorce DataFrame. Now, you'll take a look at how women's education and age at marriage relate to other variables!
+
+Your task is to create a scatter plot of each woman's age and income, layering in the categorical variable of education level for additional context.
+
+The divorce DataFrame has been loaded for you, and woman_age_marriage has already been defined as a column representing an estimate of the woman's age at the time of marriage. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns.
+
+Instructions
+100 XP
+Create a scatter plot that shows woman_age_marriage on the x-axis and income_woman on the y-axis; each data point should be colored based on the woman's level of education, represented by education_woman.
+# Create the scatter plot
+sns.scatterplot(data=divorce, x='woman_age_marriage', y='income_woman', hue='education_woman')
+plt.show()
+
+Exploring with KDE plots
+Kernel Density Estimate (KDE) plots are a great alternative to histograms when you want to show multiple distributions in the same visual.
+
+Suppose you are interested in the relationship between marriage duration and the number of kids that a couple has. Since values in the num_kids column range only from one to five, you can plot the KDE for each value on the same plot.
+
+The divorce DataFrame has been loaded for you. pandas has been loaded as pd, matplotlib.pyplot has been loaded as plt, and Seaborn has been loaded as sns. Recall that the num_kids column in divorce lists only N/A values for couples with no children, so you'll only be looking at distributions for divorced couples with at least one child.
+
+Instructions 1/3
+Create a KDE plot that shows marriage_duration on the x-axis and a different colored line for each possible number of children that a couple might have, represented by num_kids.
+Notice that the plot currently shows marriage durations less than zero; update the KDE plot so that marriage duration cannot be smoothed past the extreme data points.
+Update the code for the KDE plot from the previous step to show a cumulative distribution function for each number of children a couple has.
+# Update the KDE plot to show a cumulative distribution function
+sns.kdeplot(data=divorce, x="marriage_duration", hue="num_kids", cut=0, cumulative=True)
+plt.show()
+Well done! It looks as though there is a positive correlation between longer marriages and more children, but of course, this doesn't indicate causation. You can also see that there is much less data on couples with more than two children; this helps us understand how reliable our findings are.
+
+1. Considerations for categorical data
+00:00 - 00:09
+Let's see how we convert exploratory data analysis into action! We'll start by looking at class frequencies.
+
+2. Why perform EDA?
+00:09 - 00:23
+Recall that EDA is performed for a variety of reasons, like detecting patterns and relationships in data, generating questions or hypotheses, or to prepare data for machine learning models.
+
+1 Image credit: https://unsplash.com/@simonesecci
+3. Representative data
+00:23 - 00:52
+There's one requirement our data must satisfy regardless of our plans after performing EDA - it must be representative of the population we wish to study. For example, if we collect data with the aim of analyzing the relationship between education level and income in the USA, then we would need to collect this data from adults residing in the USA, and can't rely on data from residents of France.
+
+1 Image credits: https://unsplash.com/@cristina_glebova; https://unsplash.com/@nimbus_vulpis
+4. Categorical classes
+00:52 - 01:16
+With categorical data, one of the most important considerations is about the representation of classes, which is another term for labels. For example, say we collect data on people's attitudes to marriage. As part of our data collection we find out their marital status, with the classes including single, married, and divorced.
+
+5. Class imbalance
+01:16 - 01:51
+When we perform EDA we realize only 50 people were married, while 700 were divorced and the remaining 250 were single. Do we think that this sample accurately represents the general public's opinion about marriage? Are divorced people more likely to have a negative view towards marriage? This is an example of class imbalance, where one class occurs more frequently than others. This can bias results, particularly if this class does not occur more frequently in the population.
+
+6. Class frequency
+01:51 - 02:02
+We've been counting the number of observations per class using pandas dot-value_counts, like here, where we see how many flights went to different destinations in our planes dataset.
+
+7. Relative class frequency
+02:02 - 02:33
+Say that we know 40 percent of internal Indian flights go to Delhi. We can use value_counts method again, but this time set the normalize keyword argument equal to True. This returns the relative frequencies for each class, showing that Delhi only represents 11-point-eight-two percent of destinations in our dataset. Again, this could suggest that our data is not representative of the population - in this case, internal flights in India.
+
+8. Cross-tabulation
+02:33 - 02:51
+Another method for looking at class frequency is cross-tabulation, which enables us to examine the frequency of combinations of classes. Let's look at flight route frequencies. We'll start by calling pandas-dot-crosstab function.
+
+9. Select index
+02:51 - 02:58
+Next we select the column to use as the index for the table, in this case the Source.
+
+10. Select columns
+02:58 - 03:10
+Lastly, we pass the Destination. Values in this column will become the names of the columns in the table, and the values will be the count of combined observations.
+
+11. Cross-tabulation
+03:10 - 03:17
+We see the most popular route is from Delhi to Cochin, making up 4318 flights.
+
+12. Extending cross-tabulation
+03:17 - 03:35
+Say we know the median price for all internal flight routes in India. Here they are for the routes in our dataset, measured in Indian Rupees. We can calculate the median price for these routes in our DataFrame, and compare the difference to these expected values.
+
+13. Aggregated values with pd.crosstab()
+03:35 - 04:02
+We do this by adding two keyword arguments to pd-dot-crosstab. We pass the Price column to the values argument, and use aggfunc to select what aggregated calculation we want to perform. We can pass a summary statistic as a string, in this case setting it equal to median. The results show median values for all possible routes in the dataset.
+
+14. Comparing sample to population
+04:02 - 04:17
+Comparing our prices with the expected values, most are similar. However, routes from Banglore to Delhi and New Delhi are more expensive in our dataset, suggesting they aren't representative of the population.
+
+15. Let's practice!
+04:17 - 04:22
+Now it's your turn to look at class frequencies!
+
+Checking for class imbalance
+The 2022 Kaggle Survey captures information about data scientists' backgrounds, preferred technologies, and techniques. It is seen as an accurate view of what is happening in data science based on the volume and profile of responders.
+
+Having looked at the job titles and categorized to align with our salaries DataFrame, you can see the following proportion of job categories in the Kaggle survey:
+
+Job Category	Relative Frequency
+Data Science	0.281236
+Data Analytics	0.224231
+Other	0.214609
+Managerial	0.121300
+Machine Learning	0.083248
+Data Engineering	0.075375
+Thinking of the Kaggle survey results as the population, your task is to find out whether the salaries DataFrame is representative by comparing the relative frequency of job categories.
+
+Instructions
+100 XP
+Print the relative frequency of the "Job_Category" column from salaries DataFrame.
+# Print the relative frequency of Job_Category
+print(salaries["Job_Category"].value_counts(normalize=True))
+# Cross-tabulate Company_Size and Experience
+print(pd.crosstab(salaries["Company_Size"], salaries["Experience"]))
+# Cross-tabulate Job_Category and Company_Size
+print(pd.crosstab(salaries["Job_Category"], salaries["Company_Size"]
+# Cross-tabulate Job_Category and Company_Size
+print(pd.crosstab(salaries["Job_Category"], salaries["Company_Size"],
+            values=salaries["Salary_USD"], aggfunc="mean"))
+
+1. Generating new features
+00:00 - 00:15
+Sometimes the format of our data can limit our ability to detect relationships or inhibit the potential performance of machine learning models. One method to overcome these issues is to generate new features from our data!
+
+2. Correlation
+00:15 - 00:27
+Checking correlation with a heatmap, we see a moderate positive correlation between Price and Duration, but it looks like those are the only numeric variables in our dataset.
+
+3. Viewing data types
+00:27 - 00:35
+Viewing the data types confirms this is the case. However, Total_Stops should also be numeric.
+
+4. Total stops
+00:35 - 00:46
+Viewing the value_counts, we see we need to remove string characters, and change non-stop to zero, before converting the data type to integer.
+
+5. Cleaning total stops
+00:46 - 01:08
+We use the string-dot-replace method to first remove " stops", including the space, so that flights with two, three, or four stops are ready to convert. Next we clean flights with one stop. Lastly, we change "non-stop" to "0", then set the data type to integer.
+
+6. Correlation
+01:08 - 01:24
+Unsurprisingly, Total_Stops is strongly correlated with Duration. What is interesting is that Total_Stops and Price are more strongly correlated than Duration is with Price! Let's see what else we can find out!
+
+7. Dates
+01:24 - 01:35
+Rechecking our data types, notice that there are three datetime variables - Date_of_Journey, Dep_Time, and Arrival_Time.
+
+8. Extracting month and weekday
+01:35 - 02:18
+We know how to extract attributes from datetime values, so we can see if these offer any insights into pricing. To start, let's look at Date_of_Journey. If we think prices vary per month, it's worth using this attribute - we create it as a column in our DataFrame. Perhaps prices might also differ depending on the day of the week? Let's grab that using the dt-dot-weekday attribute. It returns values of zero, representing Monday, through to seven, for Sunday. Previewing these columns we see the first flight, departing on the 6th September, was a Friday, indicated by a four.
+
+9. Departure and arrival times
+02:18 - 02:30
+We might wonder if people tend to pay more to depart or arrive at more convenient times. We extract the hour of departure and arrival from those respective columns too.
+
+10. Correlation
+02:30 - 02:48
+Because they are numeric, we can calculate correlation between these new datetime features and other variables. Re-plotting our heatmap, unfortunately there aren't any new strong relationships. But we wouldn't have known this if we hadn't generated these features.
+
+11. Creating categories
+02:48 - 03:14
+There's one more technique we can use to generate new features. We can group numeric data and label them as classes. For example, we don't have a column for ticket type. We could use descriptive statistics to label flights as economy, premium economy, business class, or first class, based on prices within specific ranges, or bins.
+
+12. Descriptive statistics
+03:14 - 03:35
+We'll split equally across the price range using quartiles. We first store the 25th percentile using the quantile method. We get the 50th percentile by calling the median. Next we get the 75th percentile, and lastly, we store the maximum value.
+
+13. Labels and bins
+03:35 - 03:50
+We create the labels, in this case our ticket types, and store as a list. Next, we create the bins, a list starting from zero and including our descriptive statistic variables.
+
+14. pd.cut()
+03:50 - 03:53
+We now call the pd-dot-cut function,
+
+15. pd.cut()
+03:53 - 03:55
+passing our Price column,
+
+16. pd.cut()
+03:55 - 03:59
+setting the labels argument equal to our labels variable,
+
+17. pd.cut()
+03:59 - 04:03
+and the bins argument equal to our bins.
+
+18. Price categories
+04:03 - 04:10
+Previewing the Price and Price_Category columns, we see the mapping has been successfully applied!
+
+19. Price category by airline
+04:10 - 04:20
+We can plot the count of flights in different categories per airline by passing our new column to the hue argument when calling sns-dot-countplot.
+
+20. Price category by airline
+04:20 - 04:30
+Looks like Jet Airways has the largest number of "First Class" tickets, while most of IndiGo and SpiceJet's flights are "Economy".
+
+21. Let's practice!
+04:30 - 04:35
+Let's generate some new features in our data professionals dataset!
+
+Extracting features for correlation
+In this exercise, you'll work with a version of the salaries dataset containing a new column called "date_of_response".
+
+The dataset has been read in as a pandas DataFrame, with "date_of_response" as a datetime data type.
+
+Your task is to extract datetime attributes from this column and then create a heat map to visualize the correlation coefficients between variables.
+
+Seaborn has been imported for you as sns, pandas as pd, and matplotlib.pyplot as plt.
+
+Instructions
+100 XP
+Extract the month from "date_of_response", storing it as a column called "month".
+Create the "weekday" column, containing the weekday that the participants completed the survey.
+Plot a heat map, including the Pearson correlation coefficient scores.
+
+# Get the month of the response
+salaries["month"] = salaries["date_of_response"].dt.month
+
+# Extract the weekday of the response
+salaries["weekday"] = salaries["date_of_response"].dt.weekday
+
+# Create a heatmap
+sns.heatmap(salaries.corr(), annot=True)
+plt.show()
+
+Fantastic feature creation! Looks like there aren't any meaningful relationships between our numeric variables, so let's see if converting numeric data into classes offers additional insights.
+
+Calculating salary percentiles
+In the video, you saw that the conversion of numeric data into categories sometimes makes it easier to identify patterns.
+
+Your task is to convert the "Salary_USD" column into categories based on its percentiles. First, you need to find the percentiles and store them as variables.
+
+pandas has been imported as pd and the salaries dataset read in as DataFrame called salaries.
+
+Instructions
+100 XP
+Find the 25th percentile of "Salary_USD".
+Store the median of "Salary_USD" as salaries_median.
+Get the 75th percentile of salaries.
+# Find the 25th percentile
+twenty_fifth = salaries["Salary_USD"].quantile(0.25)
+
+# Save the median
+salaries_median = salaries["Salary_USD"].median()
+
+# Gather the 75th percentile
+seventy_fifth = salaries["Salary_USD"].quantile(0.75)
+print(twenty_fifth, salaries_median, seventy_fifth)
+
+Looks like the interquartile range is between 60,881 and 143,225 dollars! Now let's use these variables to add a categorical salary column into the DataFrame!
+
+Categorizing salaries
+Now it's time to make a new category! You'll use the variables twenty_fifth, salaries_median, and seventy_fifth, that you created in the previous exercise, to split salaries into different labels.
+
+The result will be a new column called "salary_level", which you'll incorporate into a visualization to analyze survey respondents' salary and at companies of different sizes.
+
+pandas has been imported as pd, matplotlib.pyplot as plt, seaborn as sns, and the salaries dataset as a pandas DataFrame called salaries.
+
+Instructions 1/4
+25 XP
+1
+2
+3
+4
+Create salary_labels, a list containing "entry", "mid", "senior", and "exec".
+Finish salary_ranges, adding the 25th percentile, median, 75th percentile, and largest value from "Salary_USD".
+Split "Salary_USD" based on the labels and ranges you've created.
+Use sns.countplot() to visualize the count of "Company_Size", factoring salary level labels.
+
+# Create salary labels
+salary_labels = ["entry", "mid", "senior", "exec"]
+
+# Create the salary ranges list
+salary_ranges = [0, twenty_fifth, salaries_median, seventy_fifth, salaries["Salary_USD"].max()]
+
+# Create salary_level
+salaries["salary_level"] = pd.cut(salaries["Salary_USD"],
+                                  bins=salary_ranges,
+                                  labels=salary_labels)
+
+# Plot the count of salary levels at companies of different sizes
+sns.countplot(data=salaries, x="Company_Size", hue="salary_level")
+plt.show()
+
+Nice work! By using pd.cut() to split out numeric data into categories, you can see that a large proportion of workers at small companies get paid "entry" level salaries, while more staff at medium-sized companies are rewarded with "senior" level salary. Now let's look at generating hypotheses as you reach the end of the EDA phase!
+
+1. Generating hypotheses
+00:00 - 00:07
+Generating hypotheses is a fundamental task for data scientists. Let's look at how and when this is done!
+
+2. What do we know?
+00:07 - 00:27
+It's reasonable to feel like we have a good idea about our planes dataset at this point, right? We've explored our data extensively and even generated new features to get new insights! We know that a large proportion of Jet Airways' tickets are expensive, as we labeled them as First Class!
+
+3. What do we know?
+00:27 - 00:36
+We also know that Duration, Total_Stops, and Price are all moderately correlated, but no other meaningful relationships exist.
+
+4. Spurious correlation
+00:36 - 01:01
+But if we generate a scatter plot of Price versus Duration, factoring Total_Stops, it looks like Total_Stops largely depend on Duration. This is an example of a spurious correlation - we might think that Total_Stops is correlated with Price, but in fact its just Duration that is correlated and Total_Stops mostly maps to Duration ranges!
+
+5. How do we know?
+01:01 - 01:16
+Also, if we split out the number of stops to look at correlation individually, it looks like zero stops has a strong negative correlation with price, but there's no meaningful relationship for journeys with three of four stops!
+
+6. What is true?
+01:16 - 02:00
+When performing EDA, the question we should ask is how do we know what we are observing is true? For example, if we collected new data on flights from a different time period, would we observe the same results? To make conclusions regarding relationships, differences, and patterns in our data, we need to use a branch of statistics called Hypothesis Testing. This involves the following steps before we even start collecting data: coming up with a hypothesis, or question, and specifying a statistical test that we will perform in order to reasonably conclude whether the hypothesis was true or false.
+
+1 Image credit: https://unsplash.com/@markuswinkler
+7. Data snooping
+02:00 - 03:04
+Let's imagine we work for an agency regulating airlines, so we have our planes data available as part of our day-to-day work without any specific questions in mind. We might be thinking, well, we have all this data, so why not just come up with questions and run some tests now? But we didn't collect the data with the aim of answering these questions. Plus, we've already looked at the data extensively and generated new features, so we might be bias and generate hypotheses that we are confident exist to prove ourselves right! We could also be tempted to run lots of tests, since we have lots of data. The acts of excessive exploratory analysis, the generation of multiple hypotheses, and the execution of multiple statistical tests are collectively known as data snooping, or p-hacking. Chances are, if we look at enough data and run enough tests, we will find a significant result.
+
+8. Generating hypotheses
+03:04 - 03:21
+So how do we generate hypotheses? We perform some EDA! Say we think that, on average, Jet Airways flights last longer than SpiceJet. We can create a bar plot, which shows us the mean duration per Airline.
+
+9. Generating hypotheses
+03:21 - 03:32
+Or we might have a hunch that flights to New Delhi are more expensive than other destinations on average. Again, we can plot the data to see if this seems to be the case.
+
+10. Next steps
+03:32 - 03:58
+From there, we need to design our experiment. This involves many steps such as choosing a sample, calculating how many data points we need, and deciding what statistical test to run. The steps involved in this process are outside the scope of this course, but hopefully we now have a sense of the advantages, limitations, and overall remit of exploratory data analysis in a data science workflow!
+
+11. Let's practice!
+03:58 - 04:04
+Time to practice generating hypotheses!
+
+Comparing salaries
+Exploratory data analysis is a crucial step in generating hypotheses!
+
+You've had an idea you'd like to explore—do data professionals get paid more in the USA than they do in Great Britain?
+
+You'll need to subset the data by "Employee_Location" and produce a plot displaying the average salary between the two groups.
+
+The salaries DataFrame has been imported as a pandas DataFrame.
+
+pandas has been imported as pd, maplotlib.pyplot as plt and seaborn as sns.
+
+Instructions
+100 XP
+Filter salaries where "Employee_Location" is "US" or "GB", saving as usa_and_gb.
+Use usa_and_gb to create a barplot visualizing "Salary_USD" against "Employee_Location".
+# Filter for employees in the US or GB
+usa_and_gb = salaries[salaries["Employee_Location"].isin(["US", "GB"])]
+
+# Create a barplot of salaries by location
+sns.barplot(data=usa_and_gb, x="Employee_Location", y="Salary_USD")
+plt.show()
+
+Choosing a hypothesis
+You've seen how visualizations can be used to generate hypotheses, making them a crucial part of exploratory data analysis!
+
+In this exercise, you'll generate a bar plot to inspect how salaries differ based on company size and employment status. For reference, there are four values:
+
+Value	Meaning
+CT	Contractor
+FL	Freelance
+PT	Part-time
+FT	Full-time
+pandas has been imported as pd, matplotlib.pyplot as plt, seaborn as sns, and the salaries dataset as a pandas DataFrame called salaries.
+
+Instructions 1/2
+50 XP
+1
+2
+Produce a barplot comparing "Salary_USD" by "Company_Size", factoring "Employment_Status".
+# Create a bar plot of salary versus company size, factoring in employment status
+sns.barplot(data=salaries, x="Company_Size", y="Salary_USD", hue="Employment_Status")
+plt.show()
+
+1. Congratulations
+00:00 - 00:05
+Congratulations on completing the course, you've covered a lot!
+
+2. Inspection and validation
+00:05 - 00:10
+You started off by learning how to inspect and validate data,
+
+3. Aggregation
+00:10 - 00:14
+before performing aggregation and calculating summary statistics!
+
+4. Address missing data
+00:14 - 00:17
+You saw how to check for missing values.
+
+5. Address missing data
+00:17 - 00:25
+You then identified strategies to deal with it, including dropping missing values, and imputation!
+
+6. Analyze categorical data
+00:25 - 00:28
+You discovered how to create categories from strings,
+
+7. Apply lambda functions
+00:28 - 00:37
+use lambda functions to conditionally calculate summary statistics based on categories and add values into the original DataFrame,
+
+8. Handle outliers
+00:37 - 00:39
+and deal with outliers!
+
+9. Patterns over time
+00:39 - 00:45
+You progressed to examining relationships, including patterns over time,
+
+10. Correlation
+00:45 - 00:47
+correlation between variables,
+
+11. Distributions
+00:47 - 00:49
+and interpreting distributions!
+
+12. Cross-tabulation
+00:49 - 00:53
+In the final chapter you learned the benefits of cross-tabulation,
+
+13. pd.cut()
+00:53 - 00:57
+generated new features using pd-dot-cut,
+
+14. Data snooping
+00:57 - 01:00
+and saw the impact of data snooping!
+
+15. Generating hypotheses
+01:00 - 01:08
+You finished by identifying the limits of EDA and the next step of the data science workflow, hypothesis testing.
+
+16. Next steps
+01:08 - 01:21
+Now you understand EDA, you may wish to explore some courses that build on the concepts in this course, such as the steps involved in hypothesis testing, or supervised learning, which is a form of machine learning!
+
+17. Congratulations!
+01:21 - 01:30
+We hope you've enjoyed the course and feel confident in performing exploratory data analysis going forward!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
