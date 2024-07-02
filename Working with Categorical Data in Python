@@ -189,6 +189,458 @@ gb = adult.groupby(by=[ "Workclass",
                         "Education"])
 How many groups are in the gb object and what is the maximum possible number of groups that could have been created? The dataset adult, and the gb object have been preloaded for you.
 
+Setting up a .groupby() statement
+The gender wage gap is a hot-topic item in the United States and across the world. Using the adult census income dataset, loaded as adult, you want to check if some of the recently published data lines up with this income survey.
+
+Instructions
+100 XP
+Split the adult dataset across the "Sex" and "Above/Below 50k" columns, saving this object as gb.
+Print out the number of observations found in each group.
+Using gb, find the average of each numerical column.
+
+# Group the adult dataset by "Sex" and "Above/Below 50k"
+gb = adult.groupby(by=["Sex","Above/Below 50k"])
+
+# Print out how many rows are in each created group
+print(gb.size())
+
+# Print out the mean of each group for all columns
+print(gb.mean())
+
+Using pandas functions effectively
+You are creating a Python application that will calculate summary statistics based on user-selected variables. The complete dataset is quite large. For now, you are setting up your code using part of the dataset, preloaded as adult. As you create a reusable process, make sure you are thinking through the most efficient way to setup the GroupBy object.
+
+Instructions
+100 XP
+Create a list of the names for two user-selected variables: "Education" and "Above/Below 50k".
+Create a GroupBy object, gb, using the user_list as the grouping variables.
+Calculate the mean of "Hours/Week" across each group using the most efficient approach covered in the video.
+
+# Create a list of user-selected variables
+user_list = ["Education", "Above/Below 50k"]
+
+# Create a GroupBy object using this list
+gb = adult.groupby(by=user_list)
+
+# Find the mean for the variable "Hours/Week" for each group - Be efficient!
+print(gb["Hours/Week"].mean())
+
+Great work. You just finished Chapter 1. People earning more than $50,000 tend to work a lot more hours, regardless of their education, than people earning less than $50,000. Remember, it's important to select your variables before calling a function. Large datatsets might have problems calculating the mean of every numerical column. Enjoying the course so far? Tell us what you think via Twitter!
+
+1. Setting category variables
+00:00 - 00:09
+To get the most out of using the pandas categorical dtype, we need to understand how to set, add, and remove categories.
+
+2. New dataset: adoptable dogs
+00:09 - 00:24
+Before we begin, let's checkout another interesting dataset. The adoptable dogs dataset contains information on 2937 adoptable dogs and contains a lot of great categorical columns for us to explore.
+
+1 https://www.kaggle.com/jmolitoris/adoptable-dogs
+3. A dog's coat
+00:24 - 00:46
+Let's start by converting the coat variable to a category using the astype method, and then check the frequency distribution using the value counts method. We are setting the dropna parameter to false to check for any missing entries. We see that a short coat is the most common, while a long coat is the least common.
+
+4. The .cat accessor object
+00:46 - 01:25
+We are going to use the dot-cat accessor object a lot in this chapter. This object let's us access and manipulate the categories of a categorical Series. Most of the methods we will introduce use the following parameters: new-categories - which is a list of new categories for the Series, inplace - which is a Boolean value for whether or not the method should overwrite the current Series, and ordered - which is a Boolean for whether or not the new Series should be treated as an ordered categorical or not. Our first example of using this object and these parameters will be setting new categories.
+
+5. Setting Series categories
+01:25 - 01:51
+cat-dot-set categories is used to set specific categories for a Series. Any values not listed in the new-categories list will be dropped. Checking the value counts of this Series again, we see that the wirehaired responses have been set to NaN. This happens because the wirehaired category is not listed in the new-categories parameter and is no longer recognized.
+
+6. Setting order
+01:51 - 02:04
+We can set the order of the categories using the ordered parameter. Checking the head of the pandas Series shows us that the Series now knows the categories have a specific order.
+
+7. Missing categories
+02:04 - 02:18
+In the likes-people column, there are 938 rows without a response. Maybe the dog shelter did not check, or maybe they checked and could not tell. Let's add a couple of categories to clean this up.
+
+8. Adding categories
+02:18 - 02:50
+We can add two categories using the cat-dot-add-categories method. Here we have added two categories, to help clarify what a missing value actually means. Notice that categories not listed in the new-categories parameter are not replaced with NaN values this time and are simply left alone. We can check the final categories using cat-dot-categories on our pandas Series. Awesome - both categories were added and can now be used in this Series.
+
+9. New categories
+02:50 - 03:04
+Although we added categories, this doesn't mean any rows of our data were set to these categories. Checking the value counts one more time verifies this. We will learn how to update values in a different lesson.
+
+10. Removing categories
+03:04 - 03:26
+We can also remove categories using the cat-dot-remove categories method. This method takes a list of categories to remove using the removals parameter. In this example, we remove the wirehaired category altogether. This also means that all wirehaired values will be set to NaN values.
+
+11. Methods recap
+03:26 - 03:49
+Let’s recap the methods covered in this lesson. We first learned how to set categories using the set-categories method, which drops values that are not specified. Add-categories can be used to add new categories, and categories not specified are left alone. Finally, remove-categories can be used to set matching values to NaN.
+
+12. Practice updating categories
+Setting categories
+After exploring the pandas Series "size" from the adoptable dogs dataset, you have decided that it should be an ordinal categorical variable. Creating such a variable takes a few steps. If these steps are performed out of order, you may not be able to access or use the necessary methods. The goal is to convert the "size" column from the dogs dataset into a ordered categorical pandas Series with the following categories: ["small", "medium", "large"].
+
+Adding categories
+The owner of a local dog adoption agency has listings for almost 3,000 dogs. One of the most common questions they have been receiving lately is: "What type of area was the dog previously kept in?". You are setting up a pipeline to do some analysis and want to look into what information is available regarding the "keep_in" variable. Both pandas, as pd, and the dogs dataset have been preloaded.
+
+Print the frequency of the responses in the "keep_in" variable and make sure the count of NaN values are shown.
+Convert the "keep_in" variable to a categorical Series.
+Add the list of new categories provided by the adoption agency, new_categories, to the "keep_in" column.
+Print the frequency counts of the keep_in column and do not drop NaN values.
+
+# Check frequency counts while also printing the NaN count
+print(dogs["keep_in"].value_counts(dropna=False))
+
+# Switch to a categorical variable
+dogs["keep_in"] = dogs["keep_in"].astype("category")
+
+# Add new categories
+new_categories = ["Unknown History", "Open Yard (Countryside)"]
+dogs["keep_in"] = dogs["keep_in"].cat.add_categories(new_categories)
+
+# Check frequency counts one more time
+print(dogs["keep_in"].value_counts(dropna=False))
+
+Well done. When the adoption agency starts adding more information to this column, they will need to use one of the five categories now available in the 'keep_in' variable.
+
+Removing categories
+Before adopting dogs, parents might want to know whether or not a new dog likes children. When looking at the adoptable dogs dataset, dogs, you notice that the frequency of responses for the categorical Series "likes_children" looks like this:
+
+maybe     1718
+yes       1172
+no          47
+The owner of the data wants to convert all "maybe" responses to "no", as it would be unsafe to let a family adapt a dog if it doesn't like children. The code to convert all "maybe" to "no" is provided in Step 1. However, the option for "maybe" still remains as a category.
+
+Instructions 1/4
+Print out the categories of the categorical Series dogs["likes_children"].
+Print out the frequency table for "likes_children" to see if any "maybe" responses remain.
+Remove the "maybe" category from the Series.
+Print out the categories of "likes_children" one more time.
+# Set "maybe" to be "no"
+dogs.loc[dogs["likes_children"] == "maybe", "likes_children"] = "no"
+
+# Print out categories
+print(dogs["likes_children"].cat.categories)
+
+# Print the frequency table
+print(dogs["likes_children"].value_counts())
+
+# Remove the `"maybe" category
+dogs["likes_children"] = dogs["likes_children"].cat.remove_categories(["maybe"])
+print(dogs["likes_children"].value_counts())
+
+# Print the categories one more time
+print(dogs["likes_children"].cat.categories)
+Great job. Telling parents that a dog 'maybe' likes children isn't helpful. To be on the safe side, the adoption agency has decided to remove maybe as an option. You can now do your analysis without worrying about 'Maybe?' showing up in the data.
+
+1. Updating categories
+00:00 - 00:09
+Now that we understand how to create, add, and remove categories in Pandas, let's work on updating and collapsing categories.
+
+2. The breed variable
+00:09 - 00:22
+Take a look at the categories found in the breed column of the dog dataset. The most common category is Unknown Mix. We can rename this category to just be Unknown.
+
+3. Renaming categories
+00:22 - 01:01
+An easy way to do this is with the cat-dot-rename-categories method. If we supply a dictionary of key-value pairs, with the key being the current category, and the value being the desired new category, we can rename categories quickly. Note that this method does not require a dictionary, but we are using one here for clarity. Let's first make a dictionary so we can map the Unknown Mix category to just be Unknown. Next, we update the breed column using cat-dot-rename-categories and passing the dictionary of changes.
+
+4. The updated breed variable
+01:01 - 01:20
+Notice that Unknown Mix has been changed to just be Unknown, but still has 1,524 responses. When using the cat-dot-rename-categories method, you can rename more than one category at a time, just make a bigger dictionary!
+
+5. Renaming categories with a function
+01:20 - 01:56
+Another nice feature of the cat-dot-rename-categories method is that you can also use a lambda function to update categories. We won't cover lamba functions in this course, but we will show a couple of examples. We are using it here just to show an example of it in action. Let's convert both male and female to be in title case. Using the title method, we convert each category in the sex variable to title case. We now have Female and Male as categories and both are in title case.
+
+6. Common replacement issues
+01:56 - 02:25
+This method does come with two key issues. First, the new category must not currently be in the list of categories. If Unknown was already a category, we would not be able to rename Unknown Mix to be Unknown. And second, we can't use this method to collapse categories. If we wanted both Unknown Mix and Mixed Breed to be the Unknown category, we can't use this method.
+
+7. Collapsing categories setup
+02:25 - 02:46
+So how do we collapse categories? Let's look at the dogs hair color Series as an example. Dog hair can be many different colors. It might make sense for us to make a new categorical column that just has a dog's main or primary color, instead of all of the combinations of colors.
+
+8. Collapsing categories example
+02:46 - 03:35
+We start by making a dictionary of all of the categories we want to collapse. Here we take all black plus one additional color categories and collapse them to the primary color of black. We use the dot-replace method to change each key-value pair listed in the update-colors dictionary. This method, however, does not preserve the categorical data type and does not use the dot-cat accessor object. What it is really doing is replacing every key in our dictionary with every value, but the method is matching strings, not categories. If we check the dtype of our new column, main-color, we see it is now an Object, not a category.
+
+9. Convert back to categorical
+03:35 - 03:59
+Anytime you are updating the underlying string of a category, you will need to convert the Series back to a categorical dtype using the astype method and specifying category. If we check the categories of our new Series, we see that black is one of them, but black and brown, black and tan, and black and white are all gone.
+
+Renaming categories
+The likes_children column of the adoptable dogs dataset needs an update. Here are the current frequency counts:
+
+Maybe?    1718
+yes       1172
+no          47
+Two things that stick out are the differences in capitalization and the ? found in the Maybe? category. The data should be cleaner than this and you are being asked to make a few changes.
+
+Instructions
+100 XP
+Create a dictionary called my_changes that will update the Maybe? category to Maybe.
+Rename the categories in likes_children using the my_changes dictionary.
+Update the categories one more time so that all categories are uppercase using the .upper() method.
+Print out the categories of the updated likes_children Series
+
+# Create the my_changes dictionary
+my_changes = {'Maybe?': 'Maybe'}
+
+# Rename the categories listed in the my_changes dictionary
+dogs["likes_children"] = dogs["likes_children"].cat.rename_categories(my_changes)
+
+# Use a lambda function to convert all categories to uppercase using upper()
+dogs["likes_children"] =  dogs["likes_children"].cat.rename_categories(lambda c: c.upper())
+
+# Print the list of categories
+print(dogs["likes_children"].cat.categories)
+
+Great work. Using two steps, we have completly updated the likes_children pandas Series. You can use these few steps to clean up categorical columns before performing your analysis.
+
+Collapsing categories
+One problem that users of a local dog adoption website have voiced is that there are too many options. As they look through the different types of dogs, they are getting lost in the overwhelming amount of choice. To simplify some of the data, you are going through each column and collapsing data if appropriate. To preserve the original data, you are going to make new updated columns in the dogs dataset. You will start with the coat column. The frequency table is listed here:
+
+short          1969
+medium          565
+wirehaired      220
+long            180
+medium-long       3
+Instructions
+100 XP
+Create a dictionary named update_coats to map both wirehaired and medium-long to medium.
+Collapse the categories listed in this new dictionary and save this as a new column, coat_collapsed.
+Convert this new column into a categorical Series.
+Print the frequency table of this new Series.
+# Create the update_coats dictionary
+update_coats = {"wirehaired": "medium", "medium-long": "medium"}
+
+# Create a new column, coat_collapsed
+dogs["coat_collapsed"] = dogs["coat"].replace(update_coats)
+
+# Convert the column to categorical
+dogs["coat_collapsed"] = dogs["coat_collapsed"].astype("category")
+
+# Print the frequency table
+print(dogs["coat_collapsed"].value_counts())
+
+Great work. By collapsing four categories down to three, you have simplified your data. If you repeat this across several columns, the total combination of categories across these variables will be greatly reduced.
+
+1. Reordering categories
+00:00 - 00:10
+We have talked about the ordering of categories several times already, so let's take a look at how to reorder categories in a Pandas Series.
+
+2. Why would you reorder?
+00:10 - 00:40
+You might reorder variables in pandas for a few different reasons. First, if the variable wasn't set as an ordinal variable upon creation, you might reorder your variables and set the Series as ordinal at this time. You might also set the order so that an analysis is displayed in a specific order, making the results easier to understand. And finally, it's good to remember that converting a Series to categorical can save on memory.
+
+3. Reordering example
+00:40 - 01:30
+Let's look at an example. The coat variable has four values. If the wirehaired value is somewhere between medium and long, we might want to reorder the categories to short, medium, wirehaired, and long. Notice that we also specified that ordered is true here, as these are lengths of a dogs coat, and length has a natural order. As a quick aside, here is an example of using the inplace parameter. By setting this to true, the coat variable is updated without needing to set the variable equal to an updated version of itself. Several functions and methods in pandas have this as a parameter and it is generally used as a way to reduce the amount of typed code.
+
+4. Grouping when ordered=True
+01:30 - 02:06
+Here we have borrowed the reorder categories setup that we used on the previous slide. Now that we have reordered our categories, several methods and visualizations will use this order when printing output. Note that the order of the printout is based on the order of the new categories parameter. Whichever order is specified using this parameter will be used. Take a look at this groupby statement. The average age for each group will be shown in the order of the categories of the coat column.
+
+5. Grouping when ordered=False
+02:06 - 02:52
+Let's use another reorder-categories call. In this example, we want the output of our summary statistics to be short, medium, long, and then wirehaired. However, this isn't the natural order because wirehaired is shorter than long. In this context, we will set the ordered parameter equal to false because we don't want the coat column to be treated as an ordinal categorical variable. This means that you can still reorder categories for display purposes without the category being ordinal. Here is the group by statement followed by the output. We see the order we specified - short, medium, long, and then wirehaired.
+
+Reordering categories in a Series
+The owner of a local dog adoption agency has asked you take a look at her data on adoptable dogs. She is specifically interested in the size of the dogs in her dataset and wants to know if there are differences in other variables, given a dog's size. The adoptable dogs dataset has been loaded as dogs and the "size" variable has already been saved as a categorical column.
+
+Instructions 2/4
+Print out the current categories of the "size" pandas Series.
+Reorder categories in the "size" column using the categories "small", "medium", "large", do not set the ordered parameter.
+Update the reorder_categories() method so that pandas knows the variable has a natural order.
+Add a argument to the method so that the "size" column is updated without needing to save it to itself.
+# Print out the current categories of the size variable
+print(dogs["size"].cat.categories)
+
+# Reorder the categories, specifying the Series is ordinal, and overwriting the original series
+dogs["size"].cat.reorder_categories(
+  new_categories=["small", "medium", "large"],
+  ordered=True,
+  inplace=True
+)
+Great work. Small is smaller than medium, which is smaller than large. Now all of your analyses will be printed in the same order.
+inplace is in many pandas functions and limits codes as you don't need to save to itself!!!
+
+Using .groupby() after reordering
+It is now time to run some analyses on the adoptable dogs dataset that is focused on the "size" of the dog. You have already developed some code to reorder the categories. In this exercise, you will develop two similar .groupby() statements to help better understand the effect of "size" on other variables. dogs has been preloaded for you.
+
+Instructions
+100 XP
+Print out the frequency table of "sex" for each category of the "size" column.
+Print out the frequency table of "keep_in" for each category of the "size" column.
+
+# Previous code
+dogs["size"].cat.reorder_categories(
+  new_categories=["small", "medium", "large"],
+  ordered=True,
+  inplace=True
+)
+
+# How many Male/Female dogs are available of each size?
+print(dogs.groupby("size")["sex"].value_counts())
+
+# Do larger dogs need more room to roam?
+print(dogs.groupby("size")["keep_in"].value_counts())
+
+1. Cleaning and accessing data
+00:00 - 00:10
+For this next lesson, we will focus on cleaning categorical columns and accessing other data by filtering categorical data.
+
+2. Possible issues with categorical data
+00:10 - 00:58
+Data is messy, especially when you are working with strings or categories. Let's focus on a few of the main issues that may arise. First, categories may be inconsistent, and although you may recognize similar values as the same category, Python does not. Capitalization and white spaces are common culprits here and these issues may occur when appending different data sources or columns. Second, spelling issues can cause big problems. This occurs frequently in surveys or online forms when the field is left to the user to fill out. And finally, if we do make corrections, we need to make sure our column dtype remains category, and is not changed to an object.
+
+3. Identifying issues
+00:58 - 01:28
+The easiest way to identify issues in our categorical columns is to use either the cat dot categories method to view the categories, or the value counts method to see the counts of each category. Let's use the value counts method on the gets-along-with-cats column of the adoptable dogs dataset. We notice 3 issues. Varying capitalization, leading white spaces, and misspellings.
+
+4. Fixing issues: whitespace
+01:28 - 01:55
+Fortunately, we have the same resources available for fixing categorical values that we do for fixing strings. We can remove whitespace by accessing the string value of the column using str, and then using the strip method to remove leading and trailing whitespace. Checkout the one category at the bottom that no longer has a leading whitespace.
+
+5. Fixing issues: capitalization
+01:55 - 02:14
+We can fix capitalization issues with str again, but this time using either the title, upper, or lower methods, depending on what type of result we want. Here we have used title, and all of the responses have been switched to title case.
+
+6. Fixing issues: misspelled words
+02:14 - 02:32
+Finally, to fix a typo, we can use the same mapping methods we learned in the renaming categories lesson. First we make a mapping, and then we use the replace method to replace the values. This leaves us with only two final categories.
+
+7. Checking the data type
+02:32 - 02:48
+If you do use one of these methods, your column will be converted to an Object data type. Remember, to check the dtype we need to use the dtype property. As always, use the astype method to convert the Series back to categorical.
+
+8. Using the str accessor object
+02:48 - 03:22
+We have already seen that we can update categories using the str accessor object, but we can also filter data using str as well. One way to use str is to look for categories that contain a specific string, such as Shepherd. We can use this filter to see all of the dogs that have some sort of Shepherd in their breed name. We are setting the regex parameter to false in this example so that we use string matching and not a regular expression.
+
+9. Accessing data with loc
+03:22 - 04:03
+One of the great things about using columns that are categories is that the data access methods of loc and iloc work like normal. We can access the size of the dogs that get along with cats by using the loc method, specifying that dogs get along with cats, and selecting the size column. Let's add the value counts method at the end of accessing this data. Note that the value counts method does not automatically use the categorical order when printing results. We can use the sort parameter here so that the output will be ordered by the order of the category.
+
+Cleaning variables
+Users of an online entry system used to have the ability to freely type in responses to questions. This is causing issues when trying to analyze the adoptable dogs dataset, dogs. Here is the current frequency table of the "sex" column:
+
+male      1672
+female    1249
+ MALE        10
+ FEMALE       5
+Malez        1
+Now that the system only takes responses of "female" and "male", you want this variable to match the updated system.
+
+Instructions 1/5
+Update the misspelled response "Malez" to be "male" by creating the replacement map, replace_map.
+Replace all occurrences of "Malez" with "male" by using replace_map.
+Remove the leading spaces of the " MALE" and " FEMALE" responses.
+Convert all responses to be strictly lowercase.
+Convert the "sex" column to a categorical pandas Series.
+
+# Fix the misspelled word
+replace_map = {"Malez": "male"}
+
+# Update the sex column using the created map
+dogs["sex"] = dogs["sex"].replace(replace_map)
+
+# Strip away leading whitespace
+dogs["sex"] = dogs["sex"].str.strip()
+
+# Make all responses lowercase
+dogs["sex"] = dogs["sex"].str.lower()
+
+# Convert to a categorical Series
+dogs["sex"] = dogs["sex"].astype('category')
+Great job. Categorical variables are usually just strings with some additional properties. An easy way to update them is using .str. Just don't forget to convert the column back to a categorical Series!
+
+Accessing and filtering data
+You are working on a Python application to display information about the dogs available for adoption at your local animal shelter. Some of the variables of interest, such as "breed", "size", and "coat", are saved as categorical variables. In order for this application to work properly, you need to be able to access and filter data using these columns.
+
+The ID variable has been set as the index of the pandas DataFrame dogs.
+
+Instructions 1/4
+25 XP
+Print the "coat" value for the dog with an ID of 23807.
+For dogs with a long "coat", print the number of each "sex".
+Print the average age of dogs with a "breed" of "English Cocker Spaniel".
+Filter to the dogs with "English" in their "breed" name using the .contains() method.
+
+# Print the category of the coat for ID 23807
+print(dogs.loc[23807, "coat"])
+
+# Find the count of male and female dogs who have a "long" coat
+print(dogs.loc[dogs["coat"] == "long", "sex"].value_counts())
+
+# Print the mean age of dogs with a breed of "English Cocker Spaniel"
+print(dogs.loc[dogs["breed"] == "English Cocker Spaniel", "age"].mean())
+
+# Count the number of dogs that have "English" in their breed name
+print(dogs[dogs["breed"].str.contains("English", regex=False)].shape[0])
+
+Well done! There are currently 24 dogs up for adoption with "English" in their breed name. Being able to access values and filter data in a DataFrame is an important skill that will be needed almost anytime pandas is used.
+
+1. Introduction to categorical plots using Seaborn
+00:00 - 00:11
+Creating and updating categories is only part of using categorical data. Let's start working on building visualizations that use categorical data.
+
+2. Our third dataset
+00:11 - 00:27
+In this chapter, we will use a new dataset, the Las Vegas TripAdvisor reviews dataset. This dataset contains information on 504 reviews from 21 hotels in Las Vegas collected in 2015.
+
+3. Las Vegas reviews
+00:27 - 00:45
+Using the dot-info method on our dataset, we can see that we have information on the hotel guest, such as their home country and traveler type, as well as information on the hotel, such as if it has a pool, gym, tennis court, or other amenities.
+
+1 https://www.kaggle.com/crawford/las-vegas-tripadvisor-reviews
+4. Seaborn
+00:45 - 01:31
+To visualize this data, we are going to use the Python library seaborn, which we have loaded as sns. Datacamp offers two great courses on seaborn - if you'd like additional practice, definitely give those courses a try. For our purposes, we will focus solely on categorical plots using seaborn, and more specifically, the catplot function. Note that Seaborn is based off of the Python library matplotlib, so we have loaded matplotlib's pyplot as plt. Depending on the environment you are coding in, you may need to run plt-dot-show after creating your graphic for it to display.
+
+5. The catplot function
+01:31 - 02:01
+Whether we are creating scatterplots, distribution plots, or just counting the number of responses, the catplot function is capable of handling the task. Let's look at the common parameters of a catplot. Both the x and y parameter are names of variables found in the DataFrame being used, while the kind parameter specifies the type of graphic to create. In this chapter we will cover several uses of the kind parameter.
+
+6. Box plot
+02:01 - 02:42
+One type of plot that catplot can create is a box plot. As a reminder, a box plot shows information on the quartiles of numerical data. In this example, we are looking at the number of rooms in hotels. The middle line of the box shows the median of the data, which is hovering around 2,800 beds. The bottom and top of the box show the 25th and 75th quartiles and look to be around 800 and 3000 beds respectively. Consult the linked wikipedia page if you need a refresher on the other elements of a box plot.
+
+7. Review score
+02:42 - 03:03
+Before we look at an example, let's understand the numerical column we are going to explore. The review score is a value between one and five, and is the rating of the hotel given by the person doing the review. Most scores are four or five, but there are a few that are three and below.
+
+8. Box plot example
+03:03 - 03:37
+Let's look at the review score, across the categorical variable Pool, using box plots. This means that we can check the distribution of score given the hotel has a pool or not. Notice that for each category in Pool, a box plot for responses that match that category has been created. Two other things you may notice are that the text is tiny, and that it's hard to tell where the two outliers are - those tiny black dots under the orange box.
+
+9. Two quick options
+03:37 - 04:07
+We can fix both of these issues using sns-dot-set and sns-dot-set-style. First, we increase the font size using font-scale, and then we add gridlines to the plot by specifying whitegrid for the style. The new graphic is easier to read, and we can tell that there are outliers at 2 and 1. It looks like a couple guests who stayed at a hotel with a pool did not like their experience.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
